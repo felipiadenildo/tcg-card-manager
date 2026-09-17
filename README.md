@@ -1,17 +1,23 @@
-# TCG Card Manager (GBC Style)
+# TCG Card Manager (Vanilla Stack)
 
 An administrative portal for managing Magic: The Gathering, Pokémon, and Yu-Gi-Oh! cards, with login
-authentication, full CRUD functionality, and an edition selector that depends on the chosen game. It's
-built as a technical challenge for a Full Stack hiring process, using plain PHP, MySQL, and vanilla
-JavaScript, with no back-end or front-end frameworks.
+authentication, full CRUD functionality, and an edition selector that depends on the chosen game. Built as
+a technical challenge for a Full Stack hiring process, using plain PHP, MySQL, and vanilla JavaScript, with
+no back-end or front-end frameworks.
 
-The visual identity is inspired by the Game Boy Color TCG games (Pokémon Trading Card Game, Pokémon Card
-GB2, Yu-Gi-Oh! Dark Duel Stories). This is a study and portfolio project, with no affiliation to the
-original brands.
+## Branch strategy
+
+This `main` branch is the minimal, unstyled baseline: exactly what the challenge asks for, functionally
+complete, with plain HTML and CSS and no visual theme applied. Other branches build different visual
+styles and implementations on top of this same functional base, as a portfolio exercise. The first one,
+`theme/gbc-style`, applies an identity inspired by the Game Boy Color TCG games (Pokémon Trading Card
+Game, Pokémon Card GB2, Yu-Gi-Oh! Dark Duel Stories). This is a study and portfolio project, with no
+affiliation to the original brands.
 
 ## Status
 
-In progress.
+Functionally complete on this branch: login, full card CRUD, and the cascading edition select all work
+end to end.
 
 ## Architecture Decisions
 
@@ -43,21 +49,57 @@ Key technical decisions made before implementation, and why.
   and `sql/schema.sql` and `sql/seed.sql` load automatically on first boot. This was chosen for
   reproducibility, so no one needs PHP or MySQL installed locally to run or evaluate the project.
 
+## Database Schema
+
+```mermaid
+erDiagram
+    users {
+        int id PK
+        varchar email
+        varchar password_hash
+        timestamp created_at
+    }
+
+    cards {
+        int id PK
+        varchar name_en
+        varchar name_pt "nullable"
+        enum card_game
+        varchar edition_id
+        varchar edition_name
+        timestamp deleted_at "nullable, soft delete"
+        timestamp created_at
+        timestamp updated_at
+    }
+```
+
+No relationship line connects the two tables: cards are not tied to the user who created them in this
+version, so `users` and `cards` are independent. Editions are not a table at all, see the "Editions data"
+decision above.
+
 ## How to run
 
 1. Copy `.env.example` to `.env`. The default values work fine for local development.
-2. Run `docker-compose up -d --build`.
-3. Visit `http://localhost:8080`. You should see a message confirming the environment is running.
+2. Run `docker-compose up -d --build`. This starts PHP, MySQL, and Adminer, and loads the schema and seed
+   data automatically on first boot.
+3. Visit `http://localhost:8080/login.html` and log in with the test credentials below.
 4. Adminer, a database GUI, is available at `http://localhost:8081` if you want to inspect the database
-   directly.
-
-The login and card management screens are still being built, so this section will grow into full setup
-steps as those land.
+   directly (server `db`, credentials from your `.env`).
 
 ## Test credentials
 
-<!-- TODO: valid username and password for login -->
+| Field | Value |
+|---|---|
+| Email | admin@tcg-gbc.dev |
+| Password | trocarSenha123 |
 
 ## UX Decisions
 
-<!-- TODO: the 2+ required product/UX decisions, with justification -->
+- **Confirming before deleting a card.** Deleting shows a confirmation prompt ("Delete '\<name\>'? This
+  cannot be undone.") before the request goes out. The challenge asks to design for users with different
+  levels of comfort with technology, and a destructive action with no undo screen in this version is
+  exactly the kind of thing that benefits from a clear, hard-to-misclick confirmation step.
+- **Showing "—" for a missing Portuguese name, instead of leaving the cell blank or repeating the English
+  name.** An empty-looking cell can read as a loading glitch or a bug, and repeating the English name
+  would misrepresent data that was never actually entered. A plain placeholder character makes it
+  immediately clear, at a glance, that the field simply was not filled in for that card.
