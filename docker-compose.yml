@@ -1,0 +1,54 @@
+services:
+  # PHP and Apache, built from the Dockerfile in this same folder.
+  app:
+    build: .
+    ports:
+      # 8080 on the host maps to 80 inside the container, so the app is
+      # reachable at localhost:8080.
+      - "8080:80"
+    volumes:
+      # Bind mount: keeps the container in sync with local file changes,
+      # no rebuild needed while developing. The COPY in the Dockerfile still
+      # matters as a fallback if the image is ever run without this mount.
+      - .:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - db
+
+  # MySQL 8.0, a good match for PHP 8.3: mysqlnd handles MySQL 8's default
+  # caching_sha2_password authentication out of the box, so there is no
+  # extra compatibility configuration needed here.
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      # Named volume: the database survives `docker-compose down`.
+      - db_data:/var/lib/mysql
+      # Anything in ./sql runs automatically the first time this volume is
+      # empty. Empty for now, this is where schema.sql and seed.sql will
+      # land once the database step of the project starts.
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      # Optional: lets a local GUI client (TablePlus, DBeaver, etc.) connect
+      # directly, separate from Adminer below.
+      - "3306:3306"
+
+  # Lightweight web UI for browsing the database while developing.
+  # Reachable at localhost:8081, not something the app itself depends on.
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+volumes:
+  db_data:

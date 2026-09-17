@@ -45,7 +45,14 @@ Key technical decisions made before implementation, and why.
 
 ## How to run
 
-<!-- TODO: setup steps (docker-compose up + anything else required) -->
+1. Copy `.env.example` to `.env`. The default values work fine for local development.
+2. Run `docker-compose up -d --build`.
+3. Visit `http://localhost:8080`. You should see a message confirming the environment is running.
+4. Adminer, a database GUI, is available at `http://localhost:8081` if you want to inspect the database
+   directly.
+
+The login and card management screens are still being built, so this section will grow into full setup
+steps as those land.
 
 ## Test credentials
 
