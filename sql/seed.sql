@@ -1,6 +1,11 @@
 -- Test data. Runs automatically on first boot, right after schema.sql,
 -- through the docker-entrypoint-initdb.d mount in docker-compose.yml.
 
+-- Without this, the client connection used for this import does not
+-- necessarily match the file's own utf8mb4 encoding, and accented
+-- characters get mangled on the way in.
+SET NAMES utf8mb4;
+
 -- Password is "trocarSenha123", hashed with bcrypt (cost 10). The plain
 -- password lives in the README under "Test credentials", never here.
 INSERT INTO users (email, password_hash) VALUES
