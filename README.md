@@ -1,4 +1,4 @@
-# TCG-GBC - Card Management Portal
+# TCG Card Manager (GBC Style)
 
 An administrative portal for managing Magic: The Gathering, Pokémon, and Yu-Gi-Oh! cards, with login
 authentication, full CRUD functionality, and an edition selector that depends on the chosen game. It's
@@ -34,9 +34,9 @@ Key technical decisions made before implementation, and why.
   row, and every listing query filters on `WHERE deleted_at IS NULL`. There's no trash or restore screen
   in this version, but the schema is ready for one later. The confirmation step before deleting stays
   either way, since from the user's point of view the card disappears the same way.
-- **Editions data: static JSON, not a database table.** `data/edicoes.json` mirrors the exact dataset
-  from the challenge, and `api/edicoes.php?jogo=<game>` serves it as a real HTTP request. Cards store
-  `edicao_id` and `edicao_nome` as plain columns, a snapshot taken when the card is saved, instead of a
+- **Editions data: static JSON, not a database table.** `data/editions.json` mirrors the exact dataset
+  from the challenge, and `api/editions.php?game=<game>` serves it as a real HTTP request. Cards store
+  `edition_id` and `edition_name` as plain columns, a snapshot taken when the card is saved, instead of a
   foreign key, since editions are a fixed external catalog rather than something managed through the
   portal.
 - **Environment: Docker Compose.** Running `docker-compose up` starts PHP (Apache) and MySQL together,

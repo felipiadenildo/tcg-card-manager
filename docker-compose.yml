@@ -33,8 +33,8 @@ services:
       # Named volume: the database survives `docker-compose down`.
       - db_data:/var/lib/mysql
       # Anything in ./sql runs automatically the first time this volume is
-      # empty. Empty for now, this is where schema.sql and seed.sql will
-      # land once the database step of the project starts.
+      # empty, which is how schema.sql and seed.sql load without a manual
+      # import step.
       - ./sql:/docker-entrypoint-initdb.d
     ports:
       # Optional: lets a local GUI client (TablePlus, DBeaver, etc.) connect
