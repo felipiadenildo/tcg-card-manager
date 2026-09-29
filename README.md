@@ -9,10 +9,16 @@ no back-end or front-end frameworks.
 
 This `main` branch is the minimal, unstyled baseline: exactly what the challenge asks for, functionally
 complete, with plain HTML and CSS and no visual theme applied. Other branches build different visual
-styles and implementations on top of this same functional base, as a portfolio exercise. The first one,
-`theme/gbc-style`, applies an identity inspired by the Game Boy Color TCG games (Pokémon Trading Card
-Game, Pokémon Card GB2, Yu-Gi-Oh! Dark Duel Stories). This is a study and portfolio project, with no
-affiliation to the original brands.
+styles on top of this same functional base, as a portfolio exercise. The PHP API and `js/api.js` are the
+same in every branch, only the pages, the CSS, and the rendering code in `js/dashboard.js` change.
+
+| Branch | Style |
+|---|---|
+| `theme/gbc-style` | Inspired by the Game Boy and Game Boy Color TCG games (Pokémon Trading Card Game, Pokémon Card GB2, Yu-Gi-Oh! Dark Duel Stories), with switchable handheld palettes. |
+| `theme/backoffice` | A plain, accessible admin panel built around the challenge's note about users with different levels of comfort with technology. |
+| `theme/modern-tcg` | Inspired by current digital TCG platforms and collection apps (MTG Arena, Pokémon TCG Live, Yu-Gi-Oh! Master Duel), with a card grid and foil effects. |
+
+This is a study and portfolio project, with no affiliation to the original brands.
 
 ## Status
 
