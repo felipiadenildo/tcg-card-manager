@@ -73,7 +73,10 @@ function openForm(card) {
   editionSelect.innerHTML = '<option value="">Select a Card Game first...</option>';
   editionSelect.disabled = true;
 
-  document.getElementById('card-form-section').hidden = false;
+  // A modal dialog opens in front of the list, wherever the user clicked,
+  // so there is no scrolling to find the form. It also keeps focus inside
+  // the form and closes with Esc.
+  document.getElementById('card-form-section').showModal();
 
   if (card) {
     document.getElementById('name-en').value = card.name_en;
@@ -84,7 +87,7 @@ function openForm(card) {
 }
 
 function closeForm() {
-  document.getElementById('card-form-section').hidden = true;
+  document.getElementById('card-form-section').close();
   editingId = null;
 }
 

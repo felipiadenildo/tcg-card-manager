@@ -27,7 +27,7 @@ requireLoginOrRedirect();
       <tbody id="cards-body"></tbody>
     </table>
 
-    <section id="card-form-section" hidden>
+    <dialog id="card-form-section" aria-labelledby="card-form-title">
       <h2 id="card-form-title">New card</h2>
       <form id="card-form">
         <label for="name-en">Name (English)</label>
@@ -54,7 +54,7 @@ requireLoginOrRedirect();
         <button type="submit">Save</button>
         <button type="button" id="cancel-card-btn">Cancel</button>
       </form>
-    </section>
+    </dialog>
   </main>
 
   <script src="js/api.js"></script>
