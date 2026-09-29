@@ -42,41 +42,6 @@ requireLoginOrRedirect();
               </tbody>
             </table>
           </div>
-
-          <section id="card-form-section" class="window" hidden>
-            <h2 id="card-form-title">New card</h2>
-            <form id="card-form" novalidate>
-              <label for="name-en">Name (English)</label>
-              <input type="text" id="name-en" maxlength="150" data-error-id="name-en-error" required>
-              <p id="name-en-error" class="field-error" hidden></p>
-
-              <label for="name-pt">Name (Portuguese)</label>
-              <input type="text" id="name-pt" maxlength="150">
-
-              <label for="card-game">Card Game</label>
-              <select id="card-game" data-error-id="card-game-error" required>
-                <option value="">Select...</option>
-                <option value="magic">Magic: The Gathering</option>
-                <option value="pokemon">Pokémon</option>
-                <option value="yugioh">Yu-Gi-Oh!</option>
-              </select>
-              <p id="card-game-error" class="field-error" hidden></p>
-
-              <label for="edition">Edition</label>
-              <select id="edition" required disabled data-error-id="edition-error">
-                <option value="">Select a Card Game first...</option>
-              </select>
-              <p id="edition-error" class="field-error" role="alert" hidden></p>
-              <button type="button" id="retry-editions" class="btn-small" hidden>Try again</button>
-
-              <p id="card-form-error" class="error" role="alert" hidden></p>
-
-              <div class="form-actions">
-                <button type="submit">Save</button>
-                <button type="button" id="cancel-card-btn">Cancel</button>
-              </div>
-            </form>
-          </section>
         </main>
       </div>
     </div>
@@ -90,6 +55,41 @@ requireLoginOrRedirect();
   </div>
 
   <div id="toasts" class="toasts"></div>
+
+  <dialog id="card-form-section" class="window form-window" aria-labelledby="card-form-title">
+    <h2 id="card-form-title">New card</h2>
+    <form id="card-form" novalidate>
+      <label for="name-en">Name (English)</label>
+      <input type="text" id="name-en" maxlength="150" data-error-id="name-en-error" required>
+      <p id="name-en-error" class="field-error" hidden></p>
+
+      <label for="name-pt">Name (Portuguese)</label>
+      <input type="text" id="name-pt" maxlength="150">
+
+      <label for="card-game">Card Game</label>
+      <select id="card-game" data-error-id="card-game-error" required>
+        <option value="">Select...</option>
+        <option value="magic">Magic: The Gathering</option>
+        <option value="pokemon">Pokémon</option>
+        <option value="yugioh">Yu-Gi-Oh!</option>
+      </select>
+      <p id="card-game-error" class="field-error" hidden></p>
+
+      <label for="edition">Edition</label>
+      <select id="edition" required disabled data-error-id="edition-error">
+        <option value="">Select a Card Game first...</option>
+      </select>
+      <p id="edition-error" class="field-error" role="alert" hidden></p>
+      <button type="button" id="retry-editions" class="btn-small" hidden>Try again</button>
+
+      <p id="card-form-error" class="error" role="alert" hidden></p>
+
+      <div class="form-actions">
+        <button type="submit">Save</button>
+        <button type="button" id="cancel-card-btn">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="confirm-dialog" class="window" aria-labelledby="confirm-message">
     <form method="dialog">

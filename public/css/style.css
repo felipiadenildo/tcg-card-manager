@@ -129,10 +129,11 @@ body {
 }
 
 .screen {
+  --screen-pad: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
+  padding: var(--screen-pad);
   background:
     linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px) 0 0 / 3px 3px,
     linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px) 0 0 / 3px 3px,
@@ -493,6 +494,27 @@ dialog::backdrop {
   background: rgba(0, 0, 0, 0.55);
 }
 
+/* The card form pops up as a menu window in the middle of the screen,
+   opening in a few quick steps the way the games drew their menus. */
+dialog.form-window {
+  width: min(540px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  overflow-y: auto;
+  scrollbar-color: var(--c0) var(--c2);
+  animation: window-open 0.18s steps(3);
+}
+
+dialog.form-window::after {
+  display: none;
+}
+
+@keyframes window-open {
+  from {
+    transform: scaleY(0.15);
+  }
+}
+
 dialog p {
   margin: 0;
   font-size: 11px;
@@ -808,7 +830,7 @@ td:nth-child(-n+2) {
   }
 
   .screen {
-    padding: 10px;
+    --screen-pad: 10px;
   }
 
   .window {
@@ -817,6 +839,27 @@ td:nth-child(-n+2) {
 
   .title-logo {
     font-size: 36px;
+  }
+
+  /* One compact line, so the pinned header leaves room for the list. */
+  .window-bar {
+    flex-wrap: nowrap;
+    padding: 10px 12px;
+  }
+
+  .window-bar h1 {
+    font-size: 12px;
+  }
+
+  .window-bar h1 .card-count {
+    margin-left: 4px;
+    font-size: 10px;
+  }
+
+  .window-bar button {
+    flex-shrink: 0;
+    padding: 8px 10px 8px 22px;
+    font-size: 9px;
   }
 
   input,
@@ -864,5 +907,73 @@ td:nth-child(-n+2) {
 
   td.empty {
     display: block;
+  }
+}
+
+/* The console fills the browser window, and the LCD screen scrolls on its
+   own inside the bezel, like a real handheld. The header with the card
+   count and "Log out" stays pinned to the top of the screen. Below a
+   minimum height the console would get too cramped to use, so short
+   windows (a phone held sideways, for example) keep the normal page
+   scroll instead. */
+
+@media (min-height: 520px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .console {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1280px;
+    height: 100%;
+  }
+
+  .console-small {
+    max-width: 540px;
+    max-height: 900px;
+  }
+
+  .bezel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .screen {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--c0) var(--c2);
+  }
+
+  .screen > * {
+    flex-shrink: 0;
+  }
+
+  .console-small .screen {
+    justify-content: safe center;
+  }
+
+  /* The screen has no top padding here, the header carries that space as
+     a margin instead, so once it sticks it sits flush against the top
+     edge with nothing peeking out above it. */
+  .screen:has(> .window-bar) {
+    padding-top: 0;
+  }
+
+  .screen > .window-bar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin-top: var(--screen-pad);
   }
 }

@@ -3,6 +3,7 @@ const GAME_LABELS = { magic: 'Magic: The Gathering', pokemon: 'Pokémon', yugioh
 const cardForm = document.getElementById('card-form');
 const tbody = document.getElementById('cards-body');
 const formError = document.getElementById('card-form-error');
+const formDialog = document.getElementById('card-form-section');
 
 let editingId = null;
 let editionsRequestToken = 0;
@@ -135,8 +136,10 @@ function openForm(card) {
   hideFormError();
   resetEditionSelect();
 
-  const section = document.getElementById('card-form-section');
-  section.hidden = false;
+  // The form pops up as a menu window in front of the list, wherever the
+  // user clicked, so there is no scrolling to find it. Focus stays inside
+  // it and goes back to the button that opened it when it closes.
+  formDialog.showModal();
 
   if (card) {
     document.getElementById('name-en').value = card.name_en;
@@ -145,15 +148,20 @@ function openForm(card) {
     loadEditions(card.card_game, card.edition_id);
   }
 
-  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  document.getElementById('name-en').focus({ preventScroll: true });
+  document.getElementById('name-en').focus();
 }
 
 function closeForm() {
-  document.getElementById('card-form-section').hidden = true;
+  formDialog.close();
   editingId = null;
   editionsRequestToken += 1;
 }
+
+// Esc closes the window like Cancel, except while a save is running.
+formDialog.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  if (!cardForm.querySelector('[type=submit]').disabled) closeForm();
+});
 
 function resetEditionSelect() {
   const editionSelect = document.getElementById('edition');
