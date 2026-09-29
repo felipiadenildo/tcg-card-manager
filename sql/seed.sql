@@ -6,10 +6,10 @@
 -- characters get mangled on the way in.
 SET NAMES utf8mb4;
 
--- Password is "trocarSenha123", hashed with bcrypt (cost 10). The plain
+-- Password is "password", hashed with bcrypt (cost 10). The plain
 -- password lives in the README under "Test credentials", never here.
 INSERT INTO users (email, password_hash) VALUES
-    ('admin@tcg-gbc.dev', '$2b$10$pC/6Z5FaDQsNj7UqZSPs.u1PB3Q6Qf3brEIFboEJ5FePaoupFdMUS');
+    ('admin@admin', '$2y$10$fUjG.cXqGpXpB9WXy/04n.Z4apPXHSrVbhpbMUt0qkwl8FIRxF.UO');
 
 INSERT INTO cards (name_en, name_pt, card_game, edition_id, edition_name) VALUES
     ('Charizard', 'Charizard', 'pokemon', 'base1', 'Base Set'),

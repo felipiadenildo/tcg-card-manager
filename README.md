@@ -96,8 +96,8 @@ decision above.
 
 | Field | Value |
 |---|---|
-| Email | admin@tcg-gbc.dev |
-| Password | trocarSenha123 |
+| Email | admin@admin |
+| Password | password |
 
 ## UX Decisions
 
