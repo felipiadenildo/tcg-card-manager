@@ -3,8 +3,29 @@ const GAME_LABELS = { magic: 'Magic: The Gathering', pokemon: 'Pokémon', yugioh
 let editingId = null;
 let editionsRequestToken = 0;
 
+// A 401 means the session ended (logged out in another tab, or expired), so
+// the only useful next step is the login page. Returns true when it redirects.
+function redirectIfLoggedOut(status) {
+  if (status !== 401) return false;
+  window.location.href = 'login.html';
+  return true;
+}
+
+function showListError(message) {
+  const errorEl = document.getElementById('list-error');
+  errorEl.textContent = message;
+  errorEl.hidden = !message;
+}
+
 async function loadCards() {
-  const { body } = await listCards();
+  const { status, body } = await listCards();
+  if (redirectIfLoggedOut(status)) return;
+
+  if (!body.ok) {
+    showListError(`Could not load the cards. ${body.error}`);
+    return;
+  }
+
   renderTable(body.data);
 }
 
@@ -74,12 +95,22 @@ async function loadEditions(game, selectedId) {
   editionSelect.disabled = true;
   editionSelect.innerHTML = '<option value="">Loading editions...</option>';
 
-  const { body } = await fetchEditions(game);
+  const { status, body } = await fetchEditions(game);
 
   // A newer request may have started while this one was in flight. If so,
   // this response is stale and gets dropped instead of overwriting the
   // select with the wrong game's editions.
   if (requestToken !== editionsRequestToken) {
+    return;
+  }
+
+  if (redirectIfLoggedOut(status)) return;
+
+  if (!body.ok) {
+    editionSelect.innerHTML = '<option value="">Could not load editions</option>';
+    const errorEl = document.getElementById('card-form-error');
+    errorEl.textContent = `${body.error} Pick the card game again to retry.`;
+    errorEl.hidden = false;
     return;
   }
 
@@ -120,9 +151,17 @@ document.getElementById('card-form').addEventListener('submit', async (event) =>
     edition_id: document.getElementById('edition').value,
   };
 
-  const { body } = editingId
+  // Disabled while the request runs, so a double click cannot save the same
+  // new card twice.
+  const saveBtn = event.target.querySelector('[type=submit]');
+  saveBtn.disabled = true;
+
+  const { status, body } = editingId
     ? await updateCard({ id: editingId, ...card })
     : await createCard(card);
+
+  saveBtn.disabled = false;
+  if (redirectIfLoggedOut(status)) return;
 
   if (!body.ok) {
     const errorEl = document.getElementById('card-form-error');
@@ -132,12 +171,17 @@ document.getElementById('card-form').addEventListener('submit', async (event) =>
   }
 
   closeForm();
+  showListError('');
   loadCards();
 });
 
 async function handleDelete(card) {
   if (!confirm(`Delete "${card.name_en}"? This cannot be undone.`)) return;
-  await deleteCard(card.id);
+
+  const { status, body } = await deleteCard(card.id);
+  if (redirectIfLoggedOut(status)) return;
+
+  showListError(body.ok ? '' : `Could not delete "${card.name_en}". ${body.error}`);
   loadCards();
 }
 
@@ -145,7 +189,13 @@ document.getElementById('new-card-btn').addEventListener('click', () => openForm
 document.getElementById('cancel-card-btn').addEventListener('click', closeForm);
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
-  await logout();
+  const { body } = await logout();
+
+  if (!body.ok) {
+    showListError(`Could not log out. ${body.error}`);
+    return;
+  }
+
   window.location.href = 'login.html';
 });
 

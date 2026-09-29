@@ -18,6 +18,8 @@ requireLoginOrRedirect();
   <main>
     <button id="new-card-btn">New card</button>
 
+    <p id="list-error" class="error" role="alert" hidden></p>
+
     <table>
       <thead>
         <tr><th>Name (EN)</th><th>Name (PT)</th><th>Game</th><th>Edition</th><th>Actions</th></tr>
@@ -47,7 +49,7 @@ requireLoginOrRedirect();
           <option value="">Select a Card Game first...</option>
         </select>
 
-        <p id="card-form-error" class="error" hidden></p>
+        <p id="card-form-error" class="error" role="alert" hidden></p>
 
         <button type="submit">Save</button>
         <button type="button" id="cancel-card-btn">Cancel</button>
