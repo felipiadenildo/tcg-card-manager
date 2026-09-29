@@ -1,4 +1,4 @@
-# TCG Card Manager (Vanilla Stack)
+# TCG Card Manager (GBC Style)
 
 An administrative portal for managing Magic: The Gathering, Pokémon, and Yu-Gi-Oh! cards, with login
 authentication, full CRUD functionality, and an edition selector that depends on the chosen game. Built as
@@ -7,8 +7,9 @@ no back-end or front-end frameworks.
 
 ## Branch strategy
 
-This `main` branch is the minimal, unstyled baseline: exactly what the challenge asks for, functionally
-complete, with plain HTML and CSS and no visual theme applied. Other branches build different visual
+This is the `theme/gbc-style` branch. The `main` branch is the minimal, unstyled baseline: exactly what
+the challenge asks for, functionally complete, with plain HTML and CSS and no visual theme applied. Theme
+branches like this one build different visual
 styles on top of this same functional base, as a portfolio exercise. The PHP API and `js/api.js` are the
 same in every branch, only the pages, the CSS, and the rendering code in `js/dashboard.js` change.
 
@@ -19,6 +20,26 @@ same in every branch, only the pages, the CSS, and the rendering code in `js/das
 | `theme/modern-tcg` | Inspired by current digital TCG platforms and collection apps (MTG Arena, Pokémon TCG Live, Yu-Gi-Oh! Master Duel), with a card grid and foil effects. |
 
 This is a study and portfolio project, with no affiliation to the original brands.
+
+## Theme: Game Boy and Game Boy Color
+
+The screens are drawn as if they were running on the handheld itself, borrowing the look of the TCG
+games released for it.
+
+- **Four shades per palette.** Every color on the screen comes from four CSS variables, `--c0` (darkest)
+  to `--c3` (lightest), the same limit the original hardware had. The default is the green DMG screen,
+  and the buttons under the screen switch to Pocket (gray), Berry (red) and Grape (purple), named after
+  the handheld's shell colors. The choice is saved in `localStorage` by `js/palette.js`, which loads in
+  `<head>` so the saved palette is applied before the first paint.
+- **Pixel font served locally.** Press Start 2P lives in `public/fonts` with its OFL license, so the
+  theme works offline inside Docker with no external requests.
+- **Menu windows and cursor.** Panels use the double bordered text box from the games, with corners
+  trimmed by `clip-path` so they look pixelated. The selected button shows the blinking arrow cursor.
+- **In-game confirmation.** Deleting a card opens a native `<dialog>` near the bottom of the screen,
+  like the games' dialogue boxes, instead of the browser's `confirm()`. "No" has focus by default, and
+  Esc also cancels, so the destructive option is never the one picked by accident.
+- **Readability.** Text stays in the darkest shade on the two lightest ones, the table stacks into
+  labeled blocks on small screens, and the blinking stops for users who ask for reduced motion.
 
 ## Status
 
