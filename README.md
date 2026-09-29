@@ -1,4 +1,4 @@
-# TCG Card Manager (Vanilla Stack)
+# TCG Card Manager (Backoffice)
 
 An administrative portal for managing Magic: The Gathering, Pokémon, and Yu-Gi-Oh! cards, with login
 authentication, full CRUD functionality, and an edition selector that depends on the chosen game. Built as
@@ -7,8 +7,9 @@ no back-end or front-end frameworks.
 
 ## Branch strategy
 
-This `main` branch is the minimal, unstyled baseline: exactly what the challenge asks for, functionally
-complete, with plain HTML and CSS and no visual theme applied. Other branches build different visual
+This is the `theme/backoffice` branch. The `main` branch is the minimal, unstyled baseline: exactly what
+the challenge asks for, functionally complete, with plain HTML and CSS and no visual theme applied. Theme
+branches like this one build different visual
 styles on top of this same functional base, as a portfolio exercise. The PHP API and `js/api.js` are the
 same in every branch, only the pages, the CSS, and the rendering code in `js/dashboard.js` change.
 
@@ -19,6 +20,49 @@ same in every branch, only the pages, the CSS, and the rendering code in `js/das
 | `theme/modern-tcg` | Inspired by current digital TCG platforms and collection apps (MTG Arena, Pokémon TCG Live, Yu-Gi-Oh! Master Duel), with a card grid and foil effects. |
 
 This is a study and portfolio project, with no affiliation to the original brands.
+
+## Theme: accessible backoffice
+
+The challenge asks for a portal that works for users with different levels of comfort with technology.
+This theme takes that as the main requirement and trades visual flair for clarity.
+
+- **Larger by default.** Base text is 18px, and every button and field is at least 44px tall, which
+  helps with low vision, shaky hands and touch screens.
+- **Fields that explain themselves.** Each label says whether the field is required or optional, and
+  short hints explain the less obvious parts, like leaving the Portuguese name blank or why the edition
+  list starts disabled.
+- **Clear feedback.** Saving, adding and deleting a card each show a confirmation message, announced to
+  screen readers through `role="status"`. Errors use an icon and a border as well as color, so they do
+  not rely on color alone. The login form shows its own message for empty fields and a "Show password"
+  option, and the Save and Sign in buttons are disabled while a request runs, so a double click cannot
+  send it twice.
+- **The form opens in a window, and asks before losing work.** "Add a card" and "Edit" open the form as a
+  dialog in front of the list, with a title bar and a close button, so it appears where the user is
+  looking. On wider screens the fields sit in two columns, so the whole form fits on a laptop screen
+  without scrolling. On phones it fills the screen. If something was typed and the user presses Cancel, the close
+  button or Esc, the form asks "Close the form anyway?" with "Keep editing" as the default, instead of
+  throwing the changes away.
+- **Safer delete.** The browser's `confirm()` is replaced by a native `<dialog>` that names the card and
+  has two explicit buttons, "Keep card" and "Delete card". "Keep card" has focus by default, and Esc
+  cancels.
+- **Keyboard and screen reader support.** There is a skip link, a focus ring visible on every
+  background, `aria-label`s that include the card name on each row's Edit and Delete buttons, and focus
+  moves to a sensible place after the form closes or a card is deleted.
+- **Light and dark.** Colors are CSS variables with a dark set under `prefers-color-scheme`, both
+  checked for WCAG AA contrast. No web fonts, the system font stack loads instantly.
+- **Small screens.** The table turns into one block per card, with the column name above each value.
+- **Every request shows its state.** A thin progress bar runs at the top of the page while any request is
+  in flight, buttons switch to a spinner with a label that says what is happening ("Signing in...",
+  "Saving...", "Deleting..."), the card list shows placeholder rows while it loads, and a "Still working"
+  notice appears when the server takes more than 5 seconds. The delete dialog stays open until the
+  server answers, so it never closes before anything happened.
+- **Errors say what to do next.** A wrong password marks both fields and selects the password to type it
+  again, with a Caps Lock warning next to the field. Form problems are listed in a summary at the top of
+  the form, each one a link to its field. A list that fails to load, or editions that fail to load, show
+  the reason and a "Try again" button instead of an empty table or a select stuck on "Loading".
+- **Connection and session.** A banner appears while the browser is offline. If the session ends while
+  the page is open, the user goes back to the sign in page with a message saying the session ended.
+  The shared helpers for all of this live in `js/feedback.js`.
 
 ## Status
 

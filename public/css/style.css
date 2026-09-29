@@ -1,41 +1,1038 @@
-body {
-  font-family: sans-serif;
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+/* Backoffice theme.
+   Built for people with different levels of comfort with technology:
+   large text, big click targets, labels that say what each field expects,
+   a focus outline that is always visible, and colors that pass WCAG AA in
+   both the light and the dark scheme. */
+
+:root {
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --text: #1a1d21;
+  --muted: #4b5563;
+  --border: #c4c9d1;
+  --border-strong: #6b7280;
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
+  --on-primary: #ffffff;
+  --danger: #b42318;
+  --danger-soft: #fef3f2;
+  --success: #166534;
+  --success-soft: #ecfdf3;
+  --focus: #f59e0b;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --warning-text: #92400e;
+  --row-alt: #f8f9fb;
+  --shadow: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
+  --magic: #9a3412;
+  --pokemon: #a16207;
+  --yugioh: #6d28d9;
+  color-scheme: light;
 }
 
-header {
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418;
+    --surface: #1b2027;
+    --text: #eef1f4;
+    --muted: #aeb6c1;
+    --border: #3a434f;
+    --border-strong: #8a94a3;
+    --primary: #8ab4ff;
+    --primary-hover: #b3ceff;
+    --on-primary: #0b1733;
+    --danger: #ff8a80;
+    --danger-soft: #3a1c1a;
+    --success: #7ee2a0;
+    --success-soft: #16301f;
+    --focus: #fbbf24;
+    --warning: #fbbf24;
+    --warning-soft: #2d2410;
+    --warning-text: #fcd34d;
+    --row-alt: #20262e;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --magic: #fdba74;
+    --pokemon: #fde047;
+    --yugioh: #c4b5fd;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Classes like .btn set their own display, which would otherwise win over
+   the hidden attribute and leave "hidden" elements on screen. */
+[hidden] {
+  display: none !important;
+}
+
+html {
+  font-size: 112.5%; /* 18px, larger than the usual 16px default */
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.muted {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A thick amber ring, visible on every background in both schemes. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+main:focus {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  padding: 0.75rem 1rem;
+  color: var(--on-primary);
+  background: var(--primary);
+  border-radius: 6px;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.icon {
+  width: 1.2em;
+  height: 1.2em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Buttons: at least 44px tall, always with a text label. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.6rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.2;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.btn-primary {
+  color: var(--on-primary);
+  background: var(--primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--row-alt);
+}
+
+/* Solid red with white text in both schemes, so the one irreversible
+   button looks the same wherever it appears. */
+.btn-danger {
+  color: #ffffff;
+  background: #b42318;
+}
+
+.btn-danger:hover {
+  background: #912018;
+}
+
+.btn-danger-outline {
+  color: var(--danger);
+  background: var(--surface);
+  border-color: var(--danger);
+}
+
+.btn-danger-outline:hover {
+  background: var(--danger-soft);
+}
+
+.btn-quiet {
+  white-space: nowrap;
+  color: var(--text);
+  background: transparent;
+  border-color: var(--border);
+}
+
+.btn-quiet:hover {
+  background: var(--row-alt);
+}
+
+.btn-small {
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Page layout */
+
+.topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+.app-name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.05rem;
 }
 
-th, td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: left;
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
 }
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+/* Status and error messages. Both carry a symbol and a side border along
+   with color, so they are told apart without relying on color alone. */
+
+.status,
+.error {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border-left: 6px solid;
+}
+
+.status {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.status::before {
+  content: '\2713';
+  font-weight: 700;
+}
+
+.error {
+  margin: 0.5rem 0 0;
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.error::before {
+  content: '!';
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 1.4em;
+  height: 1.4em;
+  font-weight: 700;
+  color: var(--surface);
+  background: var(--danger);
+  border-radius: 50%;
+}
+
+.status[hidden],
+.error[hidden] {
+  display: none;
+}
+
+/* Forms */
 
 form {
   display: flex;
   flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+label {
+  font-weight: 600;
+}
+
+.tag-required,
+.tag-optional {
+  margin-left: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tag-required::before,
+.tag-optional::before {
+  content: '(';
+}
+
+.tag-required::after,
+.tag-optional::after {
+  content: ')';
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+input[type=text],
+input[type=email],
+input[type=password],
+select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 8px;
+}
+
+input:focus-visible,
+select:focus-visible {
+  border-color: var(--primary);
+}
+
+select:disabled {
+  color: var(--muted);
+  background: var(--row-alt);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
   gap: 0.5rem;
-  max-width: 400px;
-  margin-top: 1rem;
+  margin-top: 0.4rem;
+  font-weight: 400;
+  cursor: pointer;
 }
 
-#card-form-section {
-  border: 1px solid #ccc;
-  padding: 1rem;
+.checkbox input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--primary);
 }
 
-.error {
-  color: red;
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Login */
+
+.login-page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+}
+
+.login-panel {
+  width: 100%;
+  max-width: 460px;
+  padding: 2.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--primary);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.login-panel .app-name {
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+
+.lead {
+  margin: 0.5rem 0 1.75rem;
+  color: var(--muted);
+}
+
+/* Card table */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 0.9rem 1rem;
+  font-size: 0.85rem;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border-bottom: 2px solid var(--border);
+}
+
+td {
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody tr:nth-child(even) {
+  background: var(--row-alt);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cell-name {
+  font-weight: 600;
+}
+
+/* The two name columns hold whatever was typed, so a long word with no
+   spaces must be allowed to wrap instead of stretching the table. */
+td:nth-child(-n+2) {
+  overflow-wrap: anywhere;
+}
+
+.cell-actions {
+  white-space: nowrap;
+}
+
+.cell-actions .btn + .btn {
+  margin-left: 0.5rem;
+}
+
+td.empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.game-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+}
+
+.game-tag::before {
+  content: '';
+  flex-shrink: 0;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.game-tag[data-game="magic"] { color: var(--magic); }
+.game-tag[data-game="pokemon"] { color: var(--pokemon); }
+.game-tag[data-game="yugioh"] { color: var(--yugioh); }
+
+/* Confirmation dialog */
+
+dialog {
+  width: min(480px, calc(100vw - 2rem));
+  padding: 1.75rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--danger);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+dialog::backdrop {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+dialog p {
+  margin: 0;
+}
+
+dialog form {
+  gap: 0.75rem;
+}
+
+/* The card form, opened as a window in front of the list. Tall forms
+   scroll inside the window, so the page behind never moves. */
+
+dialog.form-dialog {
+  width: min(640px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  overflow: auto;
+  border-top-color: var(--primary);
+}
+
+.form-dialog-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.form-dialog-header h2 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+dialog.form-dialog form {
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+.btn-icon {
+  min-width: 48px;
+  padding: 0.6rem;
+}
+
+/* On wider screens the fields sit in two columns (both names, then game
+   and edition), which halves the height of the form so it fits on a
+   laptop screen without scrolling. Inputs are pushed to the bottom of each
+   field, so the boxes line up even when one side has a hint above it. */
+@media (min-width: 761px) {
+  dialog.form-dialog {
+    width: min(880px, calc(100vw - 2rem));
+  }
+
+  dialog.form-dialog form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.5rem;
+  }
+
+  dialog.form-dialog .field > input,
+  dialog.form-dialog .field > select,
+  dialog.form-dialog .select-row {
+    margin-top: auto;
+  }
+
+  dialog.form-dialog .error-summary,
+  dialog.form-dialog .discard-bar,
+  dialog.form-dialog .form-actions {
+    grid-column: 1 / -1;
+  }
+
+  dialog.form-dialog .error-summary {
+    padding: 0.7rem 1rem;
+  }
+
+  dialog.form-dialog .error-summary h3 {
+    margin-bottom: 0.2rem;
+  }
+}
+
+/* Short windows: a little less padding around the form and the login. */
+@media (max-height: 760px) {
+  .form-dialog-header {
+    padding-top: 0.9rem;
+    padding-bottom: 0.75rem;
+  }
+
+  dialog.form-dialog form {
+    gap: 1rem;
+    padding-top: 1.1rem;
+    padding-bottom: 1.1rem;
+  }
+
+  .login-panel {
+    padding: 1.5rem 2rem;
+  }
+
+  .lead {
+    margin-bottom: 1.1rem;
+  }
+
+  .login-page form {
+    gap: 1rem;
+  }
+}
+
+.discard-bar {
+  padding: 1rem 1.25rem;
+  background: var(--warning-soft);
+  border: 2px solid var(--warning);
+  border-radius: 8px;
+}
+
+.discard-bar p {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Request feedback: progress bar, spinners, banners, messages and field
+   errors. Every state has a text version, the motion only adds to it. */
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 4px;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: var(--primary);
+  animation: progress 1.2s ease-in-out infinite;
+}
+
+.is-loading .progress-bar {
+  visibility: visible;
+}
+
+@keyframes progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+.spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
+  border: 3px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.spinner[hidden] {
+  display: none;
+}
+
+.spinner-dark {
+  color: var(--primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn.is-busy {
+  opacity: 1;
+  cursor: progress;
+}
+
+.banner {
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border-left: 6px solid;
+}
+
+.banner[hidden] {
+  display: none;
+}
+
+.banner-info {
+  color: var(--text);
+  background: var(--row-alt);
+  border-color: var(--primary);
+}
+
+.banner-warning {
+  color: var(--text);
+  background: var(--warning-soft);
+  border-color: var(--warning);
+}
+
+.banner-page {
+  margin: 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+.toasts:empty {
+  display: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 0.75rem 0.85rem 1rem;
+  border-radius: 8px;
+  border-left: 6px solid;
+}
+
+.toast p {
+  flex: 1;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.toast-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.toast-success::before {
+  content: '\2713';
+  font-weight: 700;
+}
+
+.toast-error {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.toast-error::before {
+  content: '!';
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 1.4em;
+  height: 1.4em;
+  font-weight: 700;
+  color: var(--surface);
+  background: var(--danger);
+  border-radius: 50%;
+}
+
+.toast-close {
+  min-width: 36px;
+  min-height: 36px;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.toast-close:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+
+.field-error {
+  margin: 0;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.field-error::before {
+  content: '! ';
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+[aria-invalid="true"] {
+  border-color: var(--danger) !important;
+  border-width: 3px !important;
+}
+
+.hint-warning {
+  font-weight: 600;
+  color: var(--warning-text);
+}
+
+.hint-warning::before {
+  content: '\26A0  ';
+}
+
+.hint[hidden] {
+  display: none;
+}
+
+.error-summary {
+  padding: 1rem 1.25rem;
+  color: var(--text);
+  border: 3px solid var(--danger);
+  border-radius: 8px;
+}
+
+.error-summary[hidden] {
+  display: none;
+}
+
+.error-summary h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--danger);
+}
+
+.error-summary ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.error-summary a {
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.select-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.select-row select {
+  flex: 1;
+}
+
+.skeleton {
+  display: block;
+  height: 1em;
+  width: 80%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--row-alt) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-short {
+  width: 50%;
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+td.list-error {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+td.list-error p {
+  margin: 0 0 1rem;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+tr.is-removing {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+
+  .progress-bar::before,
+  .skeleton {
+    animation: none;
+  }
+
+  .progress-bar::before {
+    width: 100%;
+    opacity: 0.6;
+  }
+
+  /* The spinner stops turning, but stays visible as a ring next to the
+     text, which already says what is happening. */
+  .spinner {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.6;
+  }
+}
+
+/* Small screens: each row becomes its own block, with the column name
+   written above each value, and the action buttons share the full width. */
+
+@media (max-width: 760px) {
+  html {
+    font-size: 106.25%; /* 17px */
+  }
+
+  .topbar,
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .page-header .btn {
+    width: 100%;
+  }
+
+  /* On a phone the form takes the whole screen, like a native app. */
+  dialog.form-dialog {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  .form-dialog-header,
+  dialog.form-dialog form {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .table-wrap {
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+  }
+
+  tbody tr,
+  tbody tr:nth-child(even) {
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  td {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+
+  .cell-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-bottom: none;
+  }
+
+  .cell-actions .btn {
+    flex: 1;
+  }
+
+  .cell-actions .btn + .btn {
+    margin-left: 0;
+  }
+
+  td.empty,
+  td.list-error {
+    border: none;
+  }
+
+  tr.skeleton-row td {
+    border: none;
+  }
 }

@@ -2,25 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>TCG Card Manager - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TCG Card Manager (Backoffice) - Sign in</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <main>
-    <h1>TCG Card Manager</h1>
-    <form id="login-form">
-      <label for="email">Email</label>
-      <input type="email" id="email" required>
+<body class="login-page">
+  <div class="progress-bar" aria-hidden="true"></div>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" required>
+  <main class="login-panel">
+    <p class="app-name">TCG Card Manager</p>
+    <h1>Sign in</h1>
+    <p class="lead">Use the email and password you were given to manage the card list.</p>
+
+    <p id="offline-banner" class="banner banner-warning" role="alert" hidden>
+      You are offline. Signing in will work again once the connection is back.
+    </p>
+    <p id="login-notice" class="banner banner-info" role="status" hidden></p>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <p id="email-error" class="field-error" hidden></p>
+        <input type="email" id="email" autocomplete="username" data-error-id="email-error" required>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <p id="password-error" class="field-error" hidden></p>
+        <input type="password" id="password" autocomplete="current-password" data-error-id="password-error" aria-describedby="caps-hint" required>
+        <p id="caps-hint" class="hint hint-warning" hidden>Caps Lock is on. Passwords are case sensitive.</p>
+        <label class="checkbox">
+          <input type="checkbox" id="show-password">
+          Show password
+        </label>
+      </div>
 
       <p id="login-error" class="error" role="alert" hidden></p>
+      <p id="slow-notice" class="hint" role="status" hidden>Still working. The server is taking longer than usual.</p>
 
-      <button type="submit">Log in</button>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
     </form>
   </main>
   <script src="js/api.js"></script>
+  <script src="js/feedback.js"></script>
   <script src="js/login.js"></script>
 </body>
 </html>
