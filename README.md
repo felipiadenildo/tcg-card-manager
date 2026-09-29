@@ -39,6 +39,17 @@ as a list second.
 - **Drawer and dialog.** The card form opens in a side drawer over the dimmed page and closes with
   Cancel or Esc. Deleting a card asks for confirmation in a native `<dialog>`, with Cancel focused by
   default.
+- **Every request shows its state.** A gradient bar runs across the top while anything loads, buttons
+  switch to a ring spinner with a label ("Logging in...", "Saving...", "Deleting..."), the collection
+  shows shimmering placeholder cards until it arrives, and a "Still working" toast appears when the
+  server takes more than 5 seconds. The delete dialog stays open until the server answers, and a
+  deleted card dissolves before the list reloads.
+- **Errors say what to do next.** A wrong password shakes the form, makes both fields glow red and
+  selects the password again, with an eye button to show it and a Caps Lock chip. Messages slide in as
+  toasts at the bottom right: successes fade on their own, errors stay until dismissed. A collection or
+  edition list that fails to load shows the reason and a "Try again" button, going offline shows a
+  banner, and an expired session returns to the login page with a message. The shared helpers live in
+  `js/feedback.js`.
 - **Dark stage.** A dark background with soft color glows, frosted glass panels (`backdrop-filter`) and
   the Oxanium variable font, served from `public/fonts` with its OFL license.
 
