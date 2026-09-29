@@ -1,8 +1,8 @@
 <?php
+require_once __DIR__ . '/../../config/api.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/auth.php';
 
-header('Content-Type: application/json');
 requireLoginOrRespond401();
 
 $pdo = getConnection();
@@ -19,6 +19,12 @@ function validateCardInput(array $input): ?string
 
     if ($nameEn === '') {
         return 'English name is required.';
+    }
+
+    // Same limit as the VARCHAR(150) columns in schema.sql. Checked here so
+    // a long name gets a clear message instead of a database error.
+    if (mb_strlen($nameEn) > 150 || mb_strlen(trim($input['name_pt'] ?? '')) > 150) {
+        return 'Names can be at most 150 characters long.';
     }
 
     $editions = json_decode(file_get_contents(__DIR__ . '/../../data/editions.json'), true);
@@ -57,7 +63,9 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
+    // A missing or malformed body decodes to null, treated as an empty input
+    // so it fails validation instead of crashing.
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
 
     $error = validateCardInput($input);
     if ($error !== null) {
@@ -82,7 +90,7 @@ if ($method === 'POST') {
 }
 
 if ($method === 'PUT') {
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
     $id = (int) ($input['id'] ?? 0);
     $error = validateCardInput($input);
 
@@ -110,7 +118,7 @@ if ($method === 'PUT') {
 }
 
 if ($method === 'DELETE') {
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
     $id = (int) ($input['id'] ?? 0);
 
     if ($id === 0) {
@@ -121,8 +129,16 @@ if ($method === 'DELETE') {
 
     // Soft delete: the row stays, only deleted_at gets set. See the
     // Architecture Decisions section of the README for why.
-    $stmt = $pdo->prepare('UPDATE cards SET deleted_at = NOW() WHERE id = ?');
+    $stmt = $pdo->prepare('UPDATE cards SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL');
     $stmt->execute([$id]);
+
+    // Nothing changed means the card does not exist or was already deleted,
+    // for example from another tab, and the user should hear about it.
+    if ($stmt->rowCount() === 0) {
+        http_response_code(404);
+        echo json_encode(['ok' => false, 'error' => 'This card no longer exists. The list has been refreshed.']);
+        exit;
+    }
 
     echo json_encode(['ok' => true]);
     exit;
