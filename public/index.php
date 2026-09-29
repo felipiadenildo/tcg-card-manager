@@ -1,5 +1,7 @@
 <?php
-// Temporary placeholder, only here to confirm the Docker environment is
-// wired up correctly. Gets replaced once the login and dashboard pages
-// exist.
-echo "TCG-GBC environment is up.";
+require_once __DIR__ . '/../config/auth.php';
+
+// The root URL has no page of its own. Logged in visitors go straight to
+// the dashboard, everyone else to the login page.
+header('Location: ' . (currentUserId() === null ? '/login.html' : '/dashboard.php'));
+exit;
