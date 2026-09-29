@@ -15,14 +15,26 @@
         <h1 class="title-logo">TCG<span>Card Manager</span></h1>
         <p class="title-games">Magic &middot; Pok&eacute;mon &middot; Yu-Gi-Oh!</p>
 
-        <form id="login-form" class="window">
+        <p id="offline-banner" class="window window-alert" role="alert" hidden>No connection! Logging in will work again once you are back online.</p>
+        <p id="login-notice" class="window" role="status" hidden></p>
+
+        <form id="login-form" class="window" novalidate>
           <label for="email">Email</label>
-          <input type="email" id="email" autocomplete="username" required>
+          <input type="email" id="email" autocomplete="username" data-error-id="email-error" required>
+          <p id="email-error" class="field-error" hidden></p>
 
           <label for="password">Password</label>
-          <input type="password" id="password" autocomplete="current-password" required>
+          <input type="password" id="password" autocomplete="current-password" data-error-id="password-error" aria-describedby="caps-hint" required>
+          <p id="password-error" class="field-error" hidden></p>
+          <p id="caps-hint" class="caps-hint" hidden>CAPS LOCK is on!</p>
+
+          <label class="pixel-check">
+            <input type="checkbox" id="show-password">
+            <span>Show password</span>
+          </label>
 
           <p id="login-error" class="error" role="alert" hidden></p>
+          <p id="slow-notice" class="slow-notice" role="status" hidden>Still loading... the server is slow today.</p>
 
           <button type="submit" class="btn-start">Press Start</button>
         </form>
@@ -37,6 +49,7 @@
     </nav>
   </div>
   <script src="js/api.js"></script>
+  <script src="js/feedback.js"></script>
   <script src="js/login.js"></script>
 </body>
 </html>

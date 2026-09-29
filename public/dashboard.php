@@ -21,6 +21,9 @@ requireLoginOrRedirect();
           <button id="logout-btn">Log out</button>
         </header>
 
+        <p id="offline-banner" class="window window-alert" role="alert" hidden>No connection! Changes cannot be saved until you are back online.</p>
+        <p id="slow-notice" class="window slow-notice" role="status" hidden>Still loading... the server is slow today.</p>
+
         <main>
           <button id="new-card-btn">New card</button>
 
@@ -29,31 +32,42 @@ requireLoginOrRedirect();
               <thead>
                 <tr><th>Name (EN)</th><th>Name (PT)</th><th>Game</th><th>Edition</th><th>Actions</th></tr>
               </thead>
-              <tbody id="cards-body"></tbody>
+              <tbody id="cards-body" aria-busy="true">
+                <tr>
+                  <td colspan="5" class="list-state">
+                    <p class="now-loading">Now loading</p>
+                    <span class="pixel-bar" aria-hidden="true"></span>
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
 
           <section id="card-form-section" class="window" hidden>
             <h2 id="card-form-title">New card</h2>
-            <form id="card-form">
+            <form id="card-form" novalidate>
               <label for="name-en">Name (English)</label>
-              <input type="text" id="name-en" required>
+              <input type="text" id="name-en" maxlength="150" data-error-id="name-en-error" required>
+              <p id="name-en-error" class="field-error" hidden></p>
 
               <label for="name-pt">Name (Portuguese)</label>
-              <input type="text" id="name-pt">
+              <input type="text" id="name-pt" maxlength="150">
 
               <label for="card-game">Card Game</label>
-              <select id="card-game" required>
+              <select id="card-game" data-error-id="card-game-error" required>
                 <option value="">Select...</option>
                 <option value="magic">Magic: The Gathering</option>
                 <option value="pokemon">Pokémon</option>
                 <option value="yugioh">Yu-Gi-Oh!</option>
               </select>
+              <p id="card-game-error" class="field-error" hidden></p>
 
               <label for="edition">Edition</label>
-              <select id="edition" required disabled>
+              <select id="edition" required disabled data-error-id="edition-error">
                 <option value="">Select a Card Game first...</option>
               </select>
+              <p id="edition-error" class="field-error" role="alert" hidden></p>
+              <button type="button" id="retry-editions" class="btn-small" hidden>Try again</button>
 
               <p id="card-form-error" class="error" role="alert" hidden></p>
 
@@ -75,6 +89,8 @@ requireLoginOrRedirect();
     </nav>
   </div>
 
+  <div id="toasts" class="toasts"></div>
+
   <dialog id="confirm-dialog" class="window" aria-labelledby="confirm-message">
     <form method="dialog">
       <p id="confirm-message"></p>
@@ -86,6 +102,7 @@ requireLoginOrRedirect();
   </dialog>
 
   <script src="js/api.js"></script>
+  <script src="js/feedback.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
 </html>

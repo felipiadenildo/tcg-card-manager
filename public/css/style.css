@@ -58,6 +58,12 @@
   box-sizing: border-box;
 }
 
+/* Classes that set their own display would otherwise win over the hidden
+   attribute and leave "hidden" elements on screen. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   background: var(--shell-shade);
 }
@@ -502,6 +508,276 @@ dialog::after {
   background: var(--c0);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   animation: blink 0.8s steps(1) infinite;
+}
+
+/* Request feedback, in the language of the games: the power LED flickers
+   while the handheld talks to the server, busy buttons read "Now loading"
+   with running dots, errors shake the screen, and messages pop up in the
+   dialogue box at the bottom. Every state also has plain text. */
+
+.is-loading .led {
+  animation: led 0.3s steps(1) infinite;
+}
+
+@keyframes led {
+  50% {
+    background: #5a1620;
+    box-shadow: none;
+  }
+}
+
+/* Busy buttons: the arrow cursor keeps blinking, and the label gets dots
+   that count up, like the "Now loading..." screens. */
+.spinner {
+  display: none;
+}
+
+button.is-busy {
+  cursor: progress;
+}
+
+button.is-busy::before {
+  visibility: visible;
+  animation: blink 0.5s steps(1) infinite;
+}
+
+.is-busy span:last-child::after,
+.now-loading::after,
+.is-loading-select + .field-error::after {
+  content: '...';
+  display: inline-block;
+  width: 3ch;
+  text-align: left;
+  animation: dots 1.2s steps(1) infinite;
+}
+
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+.is-loading-select {
+  animation: blink 0.8s steps(1) infinite;
+}
+
+td.list-state {
+  padding: 28px 12px;
+  text-align: center;
+  /* Also the last cell of its row, which the table keeps on one line. */
+  white-space: normal;
+}
+
+.now-loading {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+/* A progress bar made of blocks that fill in one at a time. */
+.pixel-bar {
+  display: block;
+  width: min(240px, 80%);
+  height: 18px;
+  margin: 0 auto;
+  padding: 3px;
+  border: 3px solid var(--c0);
+}
+
+.pixel-bar::before {
+  content: '';
+  display: block;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--c0) 0 10px, transparent 10px 13px);
+  animation: fill 1.6s steps(8) infinite;
+}
+
+@keyframes fill {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.list-error {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  color: var(--c3);
+  background: var(--c0);
+}
+
+.window-alert {
+  margin: 0;
+  color: var(--c3);
+  background: var(--c0);
+  box-shadow: inset 0 0 0 3px var(--c0), inset 0 0 0 6px var(--c2);
+}
+
+.slow-notice {
+  margin: 0;
+  font-size: 10px;
+}
+
+.slow-notice::after {
+  content: '';
+}
+
+#login-notice {
+  margin: 0;
+  font-size: 10px;
+}
+
+/* Field errors: the field gets a dashed outline, visible in every
+   palette, and the message sits right under it. */
+[aria-invalid="true"],
+[aria-invalid="true"]:focus {
+  outline: 3px dashed var(--c0);
+  outline-offset: 3px;
+  background-color: var(--c2);
+}
+
+.field-error {
+  margin: 4px 0 0;
+  font-size: 9px;
+  color: var(--c0);
+}
+
+.field-error::before {
+  content: '! ';
+}
+
+.caps-hint {
+  align-self: flex-start;
+  margin: 4px 0 0;
+  padding: 4px 8px;
+  font-size: 9px;
+  color: var(--c3);
+  background: var(--c1);
+}
+
+.pixel-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.pixel-check input {
+  appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  background: var(--c3);
+  border: 3px solid var(--c0);
+  cursor: pointer;
+}
+
+.pixel-check input:checked {
+  box-shadow: inset 0 0 0 3px var(--c3), inset 0 0 0 10px var(--c0);
+}
+
+.pixel-check input:focus-visible {
+  outline: 3px solid var(--c1);
+  outline-offset: 2px;
+}
+
+.btn-small {
+  align-self: flex-start;
+  padding: 6px 10px 6px 24px;
+  font-size: 9px;
+}
+
+.shake {
+  animation: shake 0.4s steps(2);
+}
+
+@keyframes shake {
+  0% { transform: translateX(-6px); }
+  25% { transform: translateX(6px); }
+  50% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+  100% { transform: none; }
+}
+
+/* A card that was deleted flickers out, like a fainted monster. */
+tr.is-removing {
+  animation: faint 0.4s steps(1) forwards;
+}
+
+@keyframes faint {
+  0% { opacity: 1; }
+  25% { opacity: 0; }
+  50% { opacity: 1; }
+  75%, 100% { opacity: 0; }
+}
+
+/* Messages pop up in the dialogue box at the bottom of the screen. */
+.toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(560px, calc(100vw - 32px));
+  transform: translateX(-50%);
+}
+
+.toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 16px 22px;
+  font-size: 11px;
+  color: var(--c0);
+  background: var(--c3);
+  border: 4px solid var(--c0);
+  box-shadow: inset 0 0 0 3px var(--c3), inset 0 0 0 6px var(--c1), 0 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+.toast::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  bottom: 10px;
+  width: 10px;
+  height: 8px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  animation: blink 0.8s steps(1) infinite;
+}
+
+.toast-error {
+  color: var(--c3);
+  background: var(--c0);
+  box-shadow: inset 0 0 0 3px var(--c0), inset 0 0 0 6px var(--c2), 0 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+.toast p {
+  flex: 1;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.toast .toast-close {
+  padding: 0 6px;
+  font-size: 14px;
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+.toast .toast-close::before {
+  display: none;
+}
+
+td:nth-child(-n+2) {
+  overflow-wrap: anywhere;
 }
 
 @media (prefers-reduced-motion: reduce) {
