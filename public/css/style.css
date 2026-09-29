@@ -19,6 +19,9 @@
   --success: #166534;
   --success-soft: #ecfdf3;
   --focus: #f59e0b;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --warning-text: #92400e;
   --row-alt: #f8f9fb;
   --shadow: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
   --magic: #9a3412;
@@ -43,6 +46,9 @@
     --success: #7ee2a0;
     --success-soft: #16301f;
     --focus: #fbbf24;
+    --warning: #fbbf24;
+    --warning-soft: #2d2410;
+    --warning-text: #fcd34d;
     --row-alt: #20262e;
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     --magic: #fdba74;
@@ -54,6 +60,12 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* Classes like .btn set their own display, which would otherwise win over
+   the hidden attribute and leave "hidden" elements on screen. */
+[hidden] {
+  display: none !important;
 }
 
 html {
@@ -467,6 +479,12 @@ tbody tr:last-child td {
   font-weight: 600;
 }
 
+/* The two name columns hold whatever was typed, so a long word with no
+   spaces must be allowed to wrap instead of stretching the table. */
+td:nth-child(-n+2) {
+  overflow-wrap: anywhere;
+}
+
 .cell-actions {
   white-space: nowrap;
 }
@@ -526,9 +544,284 @@ dialog form {
   gap: 0.75rem;
 }
 
+/* Request feedback: progress bar, spinners, banners, messages and field
+   errors. Every state has a text version, the motion only adds to it. */
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 4px;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: var(--primary);
+  animation: progress 1.2s ease-in-out infinite;
+}
+
+.is-loading .progress-bar {
+  visibility: visible;
+}
+
+@keyframes progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+.spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
+  border: 3px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.spinner[hidden] {
+  display: none;
+}
+
+.spinner-dark {
+  color: var(--primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn.is-busy {
+  opacity: 1;
+  cursor: progress;
+}
+
+.banner {
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border-left: 6px solid;
+}
+
+.banner[hidden] {
+  display: none;
+}
+
+.banner-info {
+  color: var(--text);
+  background: var(--row-alt);
+  border-color: var(--primary);
+}
+
+.banner-warning {
+  color: var(--text);
+  background: var(--warning-soft);
+  border-color: var(--warning);
+}
+
+.banner-page {
+  margin: 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+.toasts:empty {
+  display: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 0.75rem 0.85rem 1rem;
+  border-radius: 8px;
+  border-left: 6px solid;
+}
+
+.toast p {
+  flex: 1;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.toast-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.toast-success::before {
+  content: '\2713';
+  font-weight: 700;
+}
+
+.toast-error {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.toast-error::before {
+  content: '!';
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 1.4em;
+  height: 1.4em;
+  font-weight: 700;
+  color: var(--surface);
+  background: var(--danger);
+  border-radius: 50%;
+}
+
+.toast-close {
+  min-width: 36px;
+  min-height: 36px;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.toast-close:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+
+.field-error {
+  margin: 0;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.field-error::before {
+  content: '! ';
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+[aria-invalid="true"] {
+  border-color: var(--danger) !important;
+  border-width: 3px !important;
+}
+
+.hint-warning {
+  font-weight: 600;
+  color: var(--warning-text);
+}
+
+.hint-warning::before {
+  content: '\26A0  ';
+}
+
+.hint[hidden] {
+  display: none;
+}
+
+.error-summary {
+  padding: 1rem 1.25rem;
+  color: var(--text);
+  border: 3px solid var(--danger);
+  border-radius: 8px;
+}
+
+.error-summary[hidden] {
+  display: none;
+}
+
+.error-summary h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--danger);
+}
+
+.error-summary ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.error-summary a {
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.select-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.select-row select {
+  flex: 1;
+}
+
+.skeleton {
+  display: block;
+  height: 1em;
+  width: 80%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--row-alt) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-short {
+  width: 50%;
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+td.list-error {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+td.list-error p {
+  margin: 0 0 1rem;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+tr.is-removing {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
+  }
+
+  .progress-bar::before,
+  .skeleton {
+    animation: none;
+  }
+
+  .progress-bar::before {
+    width: 100%;
+    opacity: 0.6;
+  }
+
+  /* The spinner stops turning, but stays visible as a ring next to the
+     text, which already says what is happening. */
+  .spinner {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.6;
   }
 }
 
@@ -614,7 +907,12 @@ dialog form {
     margin-left: 0;
   }
 
-  td.empty {
+  td.empty,
+  td.list-error {
+    border: none;
+  }
+
+  tr.skeleton-row td {
     border: none;
   }
 }
