@@ -106,6 +106,10 @@ decision above.
 
 ## UX Decisions
 
+- **The card form opens as a dialog in front of the list.** Clicking "New card" or "Edit" on any row,
+  even at the bottom of a long list, shows the form right where the user is looking, with no scrolling to
+  find it. A native `<dialog>` opened with `showModal()` also keeps keyboard focus inside the form and
+  closes with Esc, without extra code.
 - **Confirming before deleting a card.** Deleting shows a confirmation prompt ("Delete '\<name\>'? This
   cannot be undone.") before the request goes out. The challenge asks to design for users with different
   levels of comfort with technology, and a destructive action with no undo screen in this version is
