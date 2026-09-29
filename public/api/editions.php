@@ -1,7 +1,7 @@
 <?php
+require_once __DIR__ . '/../../config/api.php';
 require_once __DIR__ . '/../../config/auth.php';
 
-header('Content-Type: application/json');
 requireLoginOrRespond401();
 
 $editions = json_decode(file_get_contents(__DIR__ . '/../../data/editions.json'), true);
