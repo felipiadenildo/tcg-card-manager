@@ -45,8 +45,18 @@ This theme takes that as the main requirement and trades visual flair for clarit
 - **Light and dark.** Colors are CSS variables with a dark set under `prefers-color-scheme`, both
   checked for WCAG AA contrast. No web fonts, the system font stack loads instantly.
 - **Small screens.** The table turns into one block per card, with the column name above each value.
-- **Expired session.** If the session ends while the page is open, the list sends the user back to the
-  sign in page instead of showing an empty table.
+- **Every request shows its state.** A thin progress bar runs at the top of the page while any request is
+  in flight, buttons switch to a spinner with a label that says what is happening ("Signing in...",
+  "Saving...", "Deleting..."), the card list shows placeholder rows while it loads, and a "Still working"
+  notice appears when the server takes more than 5 seconds. The delete dialog stays open until the
+  server answers, so it never closes before anything happened.
+- **Errors say what to do next.** A wrong password marks both fields and selects the password to type it
+  again, with a Caps Lock warning next to the field. Form problems are listed in a summary at the top of
+  the form, each one a link to its field. A list that fails to load, or editions that fail to load, show
+  the reason and a "Try again" button instead of an empty table or a select stuck on "Loading".
+- **Connection and session.** A banner appears while the browser is offline. If the session ends while
+  the page is open, the user goes back to the sign in page with a message saying the session ended.
+  The shared helpers for all of this live in `js/feedback.js`.
 
 ## Status
 
