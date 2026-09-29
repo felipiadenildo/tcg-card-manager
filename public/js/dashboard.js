@@ -7,10 +7,18 @@ const ICONS = {
 };
 
 const cardForm = document.getElementById('card-form');
+const formDialog = document.getElementById('card-form-section');
 const tbody = document.getElementById('cards-body');
 
 let editingId = null;
 let editionsRequestToken = 0;
+
+// Set as soon as the user types or picks something, so closing the form
+// can ask before throwing that work away.
+let formDirty = false;
+cardForm.addEventListener('input', () => {
+  formDirty = true;
+});
 
 async function loadCards() {
   tbody.setAttribute('aria-busy', 'true');
@@ -187,8 +195,13 @@ function openForm(card) {
   hideFormErrors();
   resetEditionSelect();
 
-  const section = document.getElementById('card-form-section');
-  section.hidden = false;
+  formDirty = false;
+  document.getElementById('discard-bar').hidden = true;
+
+  // A modal dialog opens in front of the list, wherever the user clicked,
+  // so there is no scrolling to find the form. Focus stays inside it and
+  // returns to the button that opened it when it closes.
+  formDialog.showModal();
 
   if (card) {
     document.getElementById('name-en').value = card.name_en;
@@ -197,15 +210,29 @@ function openForm(card) {
     loadEditions(card.card_game, card.edition_id);
   }
 
-  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  document.getElementById('name-en').focus({ preventScroll: true });
+  document.getElementById('name-en').focus();
 }
 
 function closeForm() {
-  document.getElementById('card-form-section').hidden = true;
+  formDialog.close();
   editingId = null;
   editionsRequestToken += 1;
-  document.getElementById('new-card-btn').focus();
+  document.getElementById('discard-bar').hidden = true;
+}
+
+// Every way of leaving the form (Cancel, the X button, Esc) goes through
+// here. Unsaved changes get a question first instead of disappearing, and
+// nothing closes while a save is still running.
+function requestCloseForm() {
+  if (cardForm.querySelector('[type=submit]').disabled) return;
+
+  if (formDirty) {
+    document.getElementById('discard-bar').hidden = false;
+    document.getElementById('keep-editing-btn').focus();
+    return;
+  }
+
+  closeForm();
 }
 
 function resetEditionSelect() {
@@ -313,6 +340,9 @@ cardForm.addEventListener('submit', async (event) => {
   clearToasts('error');
   await loadCards();
   notify(message);
+
+  // The list was redrawn, so the button that opened the form is gone.
+  document.getElementById('main').focus();
 });
 
 // Asks for confirmation and, if confirmed, runs the delete while the dialog
@@ -386,7 +416,21 @@ async function handleDelete(card) {
 }
 
 document.getElementById('new-card-btn').addEventListener('click', () => openForm(null));
-document.getElementById('cancel-card-btn').addEventListener('click', closeForm);
+document.getElementById('cancel-card-btn').addEventListener('click', requestCloseForm);
+document.getElementById('close-form-btn').addEventListener('click', requestCloseForm);
+
+// Esc on a modal dialog closes it by default. Here it asks first, like the
+// other ways out of the form.
+formDialog.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  requestCloseForm();
+});
+
+document.getElementById('keep-editing-btn').addEventListener('click', () => {
+  document.getElementById('discard-bar').hidden = true;
+  document.getElementById('name-en').focus();
+});
+document.getElementById('discard-btn').addEventListener('click', closeForm);
 
 const logoutBtn = document.getElementById('logout-btn');
 logoutBtn.addEventListener('click', async () => {

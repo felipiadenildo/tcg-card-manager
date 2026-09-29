@@ -43,57 +43,6 @@ requireLoginOrRedirect();
     </p>
     <div id="toasts" class="toasts"></div>
 
-    <section id="card-form-section" class="panel" hidden aria-labelledby="card-form-title">
-      <h2 id="card-form-title">New card</h2>
-      <form id="card-form" novalidate>
-        <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden>
-          <h3>Please check the form</h3>
-          <ul></ul>
-        </div>
-
-        <div class="field">
-          <label for="name-en">Name in English <span class="tag-required">required</span></label>
-          <p id="name-en-error" class="field-error" hidden></p>
-          <input type="text" id="name-en" maxlength="150" data-error-id="name-en-error" required>
-        </div>
-
-        <div class="field">
-          <label for="name-pt">Name in Portuguese <span class="tag-optional">optional</span></label>
-          <p id="name-pt-hint" class="hint">Leave it blank if the card has no Portuguese name.</p>
-          <p id="name-pt-error" class="field-error" hidden></p>
-          <input type="text" id="name-pt" maxlength="150" aria-describedby="name-pt-hint" data-error-id="name-pt-error">
-        </div>
-
-        <div class="field">
-          <label for="card-game">Card game <span class="tag-required">required</span></label>
-          <p id="card-game-error" class="field-error" hidden></p>
-          <select id="card-game" data-error-id="card-game-error" required>
-            <option value="">Choose a card game</option>
-            <option value="magic">Magic: The Gathering</option>
-            <option value="pokemon">Pokémon</option>
-            <option value="yugioh">Yu-Gi-Oh!</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="edition">Edition <span class="tag-required">required</span></label>
-          <p id="edition-hint" class="hint">The list of editions fills in after you choose the card game.</p>
-          <p id="edition-error" class="field-error" role="alert" hidden></p>
-          <div class="select-row">
-            <select id="edition" required disabled aria-describedby="edition-hint" data-error-id="edition-error">
-              <option value="">Select a Card Game first...</option>
-            </select>
-            <span id="edition-spinner" class="spinner spinner-dark" aria-hidden="true" hidden></span>
-          </div>
-          <button type="button" id="retry-editions" class="btn btn-secondary btn-small" hidden>Try loading the editions again</button>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Save card</button>
-          <button type="button" id="cancel-card-btn" class="btn btn-secondary">Cancel</button>
-        </div>
-      </form>
-    </section>
 
     <div class="table-wrap">
       <table>
@@ -113,6 +62,71 @@ requireLoginOrRedirect();
       </table>
     </div>
   </main>
+
+  <dialog id="card-form-section" class="form-dialog" aria-labelledby="card-form-title">
+    <div class="form-dialog-header">
+      <h2 id="card-form-title">New card</h2>
+      <button type="button" id="close-form-btn" class="btn btn-quiet btn-icon" aria-label="Close the form">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <form id="card-form" novalidate>
+      <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden>
+        <h3>Please check the form</h3>
+        <ul></ul>
+      </div>
+
+      <div class="field">
+        <label for="name-en">Name in English <span class="tag-required">required</span></label>
+        <p id="name-en-error" class="field-error" hidden></p>
+        <input type="text" id="name-en" maxlength="150" data-error-id="name-en-error" required>
+      </div>
+
+      <div class="field">
+        <label for="name-pt">Name in Portuguese <span class="tag-optional">optional</span></label>
+        <p id="name-pt-hint" class="hint">Leave it blank if the card has no Portuguese name.</p>
+        <p id="name-pt-error" class="field-error" hidden></p>
+        <input type="text" id="name-pt" maxlength="150" aria-describedby="name-pt-hint" data-error-id="name-pt-error">
+      </div>
+
+      <div class="field">
+        <label for="card-game">Card game <span class="tag-required">required</span></label>
+        <p id="card-game-error" class="field-error" hidden></p>
+        <select id="card-game" data-error-id="card-game-error" required>
+          <option value="">Choose a card game</option>
+          <option value="magic">Magic: The Gathering</option>
+          <option value="pokemon">Pokémon</option>
+          <option value="yugioh">Yu-Gi-Oh!</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="edition">Edition <span class="tag-required">required</span></label>
+        <p id="edition-hint" class="hint">The list of editions fills in after you choose the card game.</p>
+        <p id="edition-error" class="field-error" role="alert" hidden></p>
+        <div class="select-row">
+          <select id="edition" required disabled aria-describedby="edition-hint" data-error-id="edition-error">
+            <option value="">Select a Card Game first...</option>
+          </select>
+          <span id="edition-spinner" class="spinner spinner-dark" aria-hidden="true" hidden></span>
+        </div>
+        <button type="button" id="retry-editions" class="btn btn-secondary btn-small" hidden>Try loading the editions again</button>
+      </div>
+
+      <div id="discard-bar" class="discard-bar" role="alert" hidden>
+        <p>You have changes that are not saved yet. Close the form anyway?</p>
+        <div class="form-actions">
+          <button type="button" id="keep-editing-btn" class="btn btn-primary">Keep editing</button>
+          <button type="button" id="discard-btn" class="btn btn-danger-outline">Discard changes</button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save card</button>
+        <button type="button" id="cancel-card-btn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message">
     <form method="dialog">
