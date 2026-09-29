@@ -1,4 +1,4 @@
--- TCG Card Manager (GBC Style) database schema.
+-- TCG Card Manager database schema.
 -- Two tables only. Login credentials in users, the actual card catalog
 -- in cards. Editions are not stored here on purpose, they come from
 -- data/editions.json instead, see the Architecture Decisions section of

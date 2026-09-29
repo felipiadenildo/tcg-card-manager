@@ -51,6 +51,11 @@ Key technical decisions made before implementation, and why.
   `edition_id` and `edition_name` as plain columns, a snapshot taken when the card is saved, instead of a
   foreign key, since editions are a fixed external catalog rather than something managed through the
   portal.
+- **Relative URLs and predictable errors.** Every URL the front end calls, and every redirect PHP sends,
+  is relative, so the app also works from a subfolder or behind a proxy that adds a path prefix. The API
+  always answers in the same `{ ok, error }` JSON shape, even for unexpected server errors, and
+  `js/api.js` turns network failures, timeouts (15 seconds) and non-JSON answers into that same shape.
+  The pages only ever check `body.ok`, so no request can leave the screen stuck without a message.
 - **Environment: Docker Compose.** Running `docker-compose up` starts PHP (Apache) and MySQL together,
   and `sql/schema.sql` and `sql/seed.sql` load automatically on first boot. This was chosen for
   reproducibility, so no one needs PHP or MySQL installed locally to run or evaluate the project.
