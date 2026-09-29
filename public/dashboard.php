@@ -18,15 +18,16 @@ requireLoginOrRedirect();
       <div class="screen">
         <header class="window window-bar">
           <h1>Cards <span id="card-count" class="card-count"></span></h1>
-          <button id="logout-btn">Log out</button>
+          <div class="window-bar-actions">
+            <button id="new-card-btn">New card</button>
+            <button id="logout-btn">Log out</button>
+          </div>
         </header>
 
         <p id="offline-banner" class="window window-alert" role="alert" hidden>No connection! Changes cannot be saved until you are back online.</p>
         <p id="slow-notice" class="window slow-notice" role="status" hidden>Still loading... the server is slow today.</p>
 
         <main>
-          <button id="new-card-btn">New card</button>
-
           <div class="window">
             <table>
               <thead>

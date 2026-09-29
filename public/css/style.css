@@ -192,6 +192,12 @@ h2 {
   margin-bottom: 16px;
 }
 
+.window-bar-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
 .card-count {
   margin-left: 8px;
   font-size: 12px;
@@ -854,6 +860,10 @@ td:nth-child(-n+2) {
   .window-bar h1 .card-count {
     margin-left: 4px;
     font-size: 10px;
+  }
+
+  .window-bar-actions {
+    gap: 6px;
   }
 
   .window-bar button {
