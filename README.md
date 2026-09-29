@@ -26,6 +26,12 @@ This is a study and portfolio project, with no affiliation to the original brand
 The screens are drawn as if they were running on the handheld itself, borrowing the look of the TCG
 games released for it.
 
+- **A console that fits the window.** The handheld fills the browser window, and the LCD screen scrolls
+  on its own inside the bezel, with the "Cards" header pinned to its top edge. The console grows up to
+  1280px wide on large monitors, and on a phone it becomes a tall handheld. Below 520px of height, where
+  it would get too cramped, the page falls back to scrolling normally.
+- **Menu windows for the form.** "New card" and "Edit" pop the form up as a menu window in the middle of
+  the screen, in front of the list, so it never needs scrolling to find. It closes with Cancel or Esc.
 - **Four shades per palette.** Every color on the screen comes from four CSS variables, `--c0` (darkest)
   to `--c3` (lightest), the same limit the original hardware had. The default is the green DMG screen,
   and the buttons under the screen switch to Pocket (gray), Berry (red) and Grape (purple), named after
