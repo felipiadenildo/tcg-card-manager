@@ -4,7 +4,16 @@ require_once __DIR__ . '/database.php';
 // Starting the session here means anything that requires this file already
 // has a session ready to use, without needing to remember session_start()
 // separately in every entry point.
-session_start();
+//
+// The cookie name comes from SESSION_NAME so two copies of the app on the
+// same host (browsers share cookies across ports) do not overwrite each
+// other's login. HttpOnly keeps the cookie out of reach of JavaScript, and
+// SameSite=Lax stops other sites from sending it along with their requests.
+session_start([
+    'name' => getenv('SESSION_NAME') ?: 'tcg_session',
+    'cookie_httponly' => true,
+    'cookie_samesite' => 'Lax',
+]);
 
 function currentUserId(): ?int
 {
@@ -16,7 +25,9 @@ function currentUserId(): ?int
 function requireLoginOrRedirect(): void
 {
     if (currentUserId() === null) {
-        header('Location: /login.html');
+        // Relative, so it still points to the right place when the app is
+        // served from a subfolder or behind a proxy with a path prefix.
+        header('Location: login.html');
         exit;
     }
 }

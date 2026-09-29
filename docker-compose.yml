@@ -16,6 +16,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      SESSION_NAME: ${SESSION_NAME:-tcg_session}
     depends_on:
       - db
 
