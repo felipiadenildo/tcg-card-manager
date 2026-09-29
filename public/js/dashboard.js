@@ -1,32 +1,164 @@
 const GAME_LABELS = { magic: 'Magic: The Gathering', pokemon: 'Pokémon', yugioh: 'Yu-Gi-Oh!' };
+const GAME_SHORT = { magic: 'MTG', pokemon: 'PKMN', yugioh: 'YGO' };
+const VIEW_KEY = 'tcg-view';
 
 let editingId = null;
 let editionsRequestToken = 0;
 
-// A 401 means the session ended (logged out in another tab, or expired), so
-// the only useful next step is the login page. Returns true when it redirects.
-function redirectIfLoggedOut(status) {
-  if (status !== 401) return false;
-  window.location.href = 'login.html';
-  return true;
-}
+// The full list from the API. Filtering and search only change what gets
+// rendered from it, so switching filters never needs another request.
+let allCards = [];
+let activeGame = 'all';
+let searchQuery = '';
 
-function showListError(message) {
-  const errorEl = document.getElementById('list-error');
-  errorEl.textContent = message;
-  errorEl.hidden = !message;
-}
+// The tilt and foil effect follow the mouse, so they only run on devices
+// with a real pointer and for users who have not asked for less motion.
+const tiltEnabled = window.matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)').matches;
+
+const collection = document.getElementById('collection');
+const cardForm = document.getElementById('card-form');
+const formError = document.getElementById('card-form-error');
 
 async function loadCards() {
-  const { status, body } = await listCards();
-  if (redirectIfLoggedOut(status)) return;
+  collection.setAttribute('aria-busy', 'true');
+  const { status, body } = await track(listCards());
+  collection.removeAttribute('aria-busy');
+
+  if (status === 401) return goToLogin();
 
   if (!body.ok) {
-    showListError(`Could not load the cards. ${body.error}`);
+    showListError(body.error);
     return;
   }
 
-  renderTable(body.data);
+  document.getElementById('list-error').hidden = true;
+  allCards = body.data;
+  updateCounts();
+  render();
+}
+
+// Replaces the skeleton cards with a message and a retry button, so a
+// failed load never looks like an empty collection.
+function showListError(message) {
+  document.getElementById('cards-grid').innerHTML = '';
+  document.getElementById('cards-body').innerHTML = '';
+  document.getElementById('empty-state').hidden = true;
+  document.getElementById('list-error-message').textContent = `The collection could not be loaded. ${message}`;
+  document.getElementById('list-error').hidden = false;
+  setBusy(document.getElementById('retry-list'), false);
+}
+
+function updateCounts() {
+  document.querySelector('[data-count="all"]').textContent = allCards.length;
+  Object.keys(GAME_LABELS).forEach((game) => {
+    const count = allCards.filter((card) => card.card_game === game).length;
+    document.querySelector(`[data-count="${game}"]`).textContent = count;
+  });
+}
+
+function visibleCards() {
+  const query = searchQuery.trim().toLowerCase();
+
+  return allCards.filter((card) => {
+    if (activeGame !== 'all' && card.card_game !== activeGame) return false;
+    if (!query) return true;
+    return [card.name_en, card.name_pt, card.edition_name]
+      .some((value) => value && value.toLowerCase().includes(query));
+  });
+}
+
+function render() {
+  // While the load error is on screen there is no list to filter.
+  if (!document.getElementById('list-error').hidden) return;
+
+  const cards = visibleCards();
+  renderGrid(cards);
+  renderTable(cards);
+
+  const emptyEl = document.getElementById('empty-state');
+  emptyEl.hidden = cards.length > 0;
+  emptyEl.textContent = allCards.length === 0
+    ? 'Your collection is empty. Add the first card with "+ New card".'
+    : 'No cards match this filter.';
+}
+
+function createActionButtons(card) {
+  const editBtn = document.createElement('button');
+  editBtn.className = 'btn btn-small btn-ghost';
+  editBtn.textContent = 'Edit';
+  editBtn.dataset.action = 'edit';
+  editBtn.dataset.name = card.name_en;
+  editBtn.setAttribute('aria-label', `Edit ${card.name_en}`);
+  editBtn.addEventListener('click', () => openForm(card));
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'btn btn-small btn-ghost btn-ghost-danger';
+  deleteBtn.textContent = 'Delete';
+  deleteBtn.dataset.action = 'delete';
+  deleteBtn.dataset.name = card.name_en;
+  deleteBtn.setAttribute('aria-label', `Delete ${card.name_en}`);
+  deleteBtn.addEventListener('click', () => handleDelete(card));
+
+  return [editBtn, deleteBtn];
+}
+
+function renderGrid(cards) {
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+
+  cards.forEach((card) => {
+    const item = document.createElement('li');
+    item.className = 'card-item';
+    item.dataset.id = card.id;
+
+    const face = document.createElement('article');
+    face.className = 'tcg-card';
+    face.dataset.game = card.card_game;
+
+    const name = document.createElement('h3');
+    name.className = 'tcg-card-name';
+    name.textContent = card.name_en;
+
+    const art = document.createElement('div');
+    art.className = 'tcg-card-art';
+    art.setAttribute('aria-hidden', 'true');
+    art.textContent = GAME_SHORT[card.card_game];
+
+    const text = document.createElement('div');
+    text.className = 'tcg-card-text';
+
+    const namePt = document.createElement('p');
+    namePt.textContent = card.name_pt || '—';
+    namePt.className = card.name_pt ? '' : 'faded';
+
+    const edition = document.createElement('p');
+    edition.className = 'tcg-card-edition';
+    edition.textContent = card.edition_name;
+
+    text.append(namePt, edition);
+
+    const footer = document.createElement('footer');
+    footer.className = 'tcg-card-footer';
+    const game = document.createElement('span');
+    game.textContent = GAME_LABELS[card.card_game];
+    const code = document.createElement('span');
+    code.textContent = card.edition_id.toUpperCase();
+    footer.append(game, code);
+
+    const foil = document.createElement('span');
+    foil.className = 'foil';
+    foil.setAttribute('aria-hidden', 'true');
+
+    face.append(name, art, text, footer, foil);
+    if (tiltEnabled) attachTilt(face);
+
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+    actions.append(...createActionButtons(card));
+
+    item.append(face, actions);
+    grid.appendChild(item);
+  });
 }
 
 function renderTable(cards) {
@@ -35,6 +167,7 @@ function renderTable(cards) {
 
   cards.forEach((card) => {
     const row = document.createElement('tr');
+    row.dataset.id = card.id;
 
     const nameEnCell = document.createElement('td');
     nameEnCell.textContent = card.name_en;
@@ -43,39 +176,73 @@ function renderTable(cards) {
     namePtCell.textContent = card.name_pt || '—';
 
     const gameCell = document.createElement('td');
-    gameCell.textContent = GAME_LABELS[card.card_game];
+    const gamePill = document.createElement('span');
+    gamePill.className = 'game-pill';
+    gamePill.dataset.game = card.card_game;
+    gamePill.textContent = GAME_LABELS[card.card_game];
+    gameCell.appendChild(gamePill);
 
     const editionCell = document.createElement('td');
     editionCell.textContent = card.edition_name;
 
     const actionsCell = document.createElement('td');
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Edit';
-    editBtn.addEventListener('click', () => openForm(card));
+    actionsCell.className = 'cell-actions';
+    actionsCell.append(...createActionButtons(card));
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.addEventListener('click', () => handleDelete(card));
-
-    actionsCell.append(editBtn, deleteBtn);
     row.append(nameEnCell, namePtCell, gameCell, editionCell, actionsCell);
     tbody.appendChild(row);
   });
 }
 
+// Rotates the card toward the pointer and moves the foil highlight with it.
+// Only CSS variables change here, the actual transform lives in style.css.
+function attachTilt(face) {
+  face.addEventListener('pointermove', (event) => {
+    const rect = face.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    face.style.setProperty('--mx', `${x * 100}%`);
+    face.style.setProperty('--my', `${y * 100}%`);
+    face.style.setProperty('--ry', `${(x - 0.5) * 16}deg`);
+    face.style.setProperty('--rx', `${(0.5 - y) * 16}deg`);
+    face.classList.add('is-tilting');
+  });
+
+  face.addEventListener('pointerleave', () => {
+    face.classList.remove('is-tilting');
+    face.style.removeProperty('--rx');
+    face.style.removeProperty('--ry');
+  });
+}
+
+function showFormError(message, field) {
+  formError.textContent = message;
+  formError.hidden = false;
+  replayAnimation(cardForm, 'shake');
+  if (field) {
+    markInvalid(field, message);
+    field.focus();
+  }
+}
+
+function hideFormError() {
+  formError.hidden = true;
+  clearInvalid(cardForm);
+}
+
+function isSaving() {
+  return cardForm.querySelector('[type=submit]').disabled;
+}
+
 function openForm(card) {
   editingId = card ? card.id : null;
   document.getElementById('card-form-title').textContent = card ? 'Edit card' : 'New card';
-  document.getElementById('card-form').reset();
-  document.getElementById('card-form-error').hidden = true;
+  cardForm.reset();
+  hideFormError();
+  resetEditionSelect();
 
-  const editionSelect = document.getElementById('edition');
-  editionSelect.innerHTML = '<option value="">Select a Card Game first...</option>';
-  editionSelect.disabled = true;
-
-  // A modal dialog opens in front of the list, wherever the user clicked,
-  // so there is no scrolling to find the form. It also keeps focus inside
-  // the form and closes with Esc.
+  // A modal dialog slides in from the right, in front of the collection.
+  // Focus stays inside it and returns to the button that opened it.
   document.getElementById('card-form-section').showModal();
 
   if (card) {
@@ -84,21 +251,36 @@ function openForm(card) {
     document.getElementById('card-game').value = card.card_game;
     loadEditions(card.card_game, card.edition_id);
   }
+
+  document.getElementById('name-en').focus();
 }
 
 function closeForm() {
   document.getElementById('card-form-section').close();
   editingId = null;
+  editionsRequestToken += 1;
+}
+
+function resetEditionSelect() {
+  const editionSelect = document.getElementById('edition');
+  editionSelect.innerHTML = '<option value="">Select a Card Game first...</option>';
+  editionSelect.disabled = true;
+  document.getElementById('edition-spinner').hidden = true;
+  document.getElementById('retry-editions').hidden = true;
 }
 
 async function loadEditions(game, selectedId) {
   const requestToken = ++editionsRequestToken;
   const editionSelect = document.getElementById('edition');
+  const spinner = document.getElementById('edition-spinner');
+  const retry = document.getElementById('retry-editions');
 
   editionSelect.disabled = true;
   editionSelect.innerHTML = '<option value="">Loading editions...</option>';
+  spinner.hidden = false;
+  retry.hidden = true;
 
-  const { status, body } = await fetchEditions(game);
+  const { status, body } = await track(fetchEditions(game));
 
   // A newer request may have started while this one was in flight. If so,
   // this response is stale and gets dropped instead of overwriting the
@@ -107,13 +289,14 @@ async function loadEditions(game, selectedId) {
     return;
   }
 
-  if (redirectIfLoggedOut(status)) return;
+  spinner.hidden = true;
+  if (status === 401) return goToLogin();
 
   if (!body.ok) {
-    editionSelect.innerHTML = '<option value="">Could not load editions</option>';
-    const errorEl = document.getElementById('card-form-error');
-    errorEl.textContent = `${body.error} Pick the card game again to retry.`;
-    errorEl.hidden = false;
+    editionSelect.innerHTML = '<option value="">Editions could not be loaded</option>';
+    markInvalid(editionSelect, `The editions could not be loaded. ${body.error}`);
+    retry.hidden = false;
+    retry.onclick = () => loadEditions(game, selectedId);
     return;
   }
 
@@ -131,21 +314,46 @@ async function loadEditions(game, selectedId) {
   }
 }
 
+function setView(view) {
+  document.getElementById('collection').dataset.view = view;
+  document.querySelectorAll('[data-view]:not(#collection)').forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.view === view));
+  });
+
+  // Only a convenience, so a storage error just means the choice is not
+  // remembered next time.
+  try {
+    localStorage.setItem(VIEW_KEY, view);
+  } catch {
+    // Ignored on purpose.
+  }
+}
+
+function savedView() {
+  try {
+    return localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'grid';
+  } catch {
+    return 'grid';
+  }
+}
+
 document.getElementById('card-game').addEventListener('change', (event) => {
   const game = event.target.value;
-  const editionSelect = document.getElementById('edition');
 
   if (!game) {
-    editionSelect.innerHTML = '<option value="">Select a Card Game first...</option>';
-    editionSelect.disabled = true;
+    editionsRequestToken += 1;
+    resetEditionSelect();
     return;
   }
 
   loadEditions(game);
 });
 
-document.getElementById('card-form').addEventListener('submit', async (event) => {
+cardForm.addEventListener('submit', async (event) => {
   event.preventDefault();
+
+  const saveBtn = cardForm.querySelector('[type=submit]');
+  if (saveBtn.disabled) return;
 
   const card = {
     name_en: document.getElementById('name-en').value,
@@ -154,52 +362,143 @@ document.getElementById('card-form').addEventListener('submit', async (event) =>
     edition_id: document.getElementById('edition').value,
   };
 
-  // Disabled while the request runs, so a double click cannot save the same
-  // new card twice.
-  const saveBtn = event.target.querySelector('[type=submit]');
-  saveBtn.disabled = true;
+  hideFormError();
+  if (!card.name_en.trim()) return showFormError('Enter the English name.', document.getElementById('name-en'));
+  if (!card.card_game) return showFormError('Choose a card game.', document.getElementById('card-game'));
+  if (!card.edition_id) return showFormError('Choose an edition.', document.getElementById('edition'));
 
-  const { status, body } = editingId
-    ? await updateCard({ id: editingId, ...card })
-    : await createCard(card);
+  // Disabled while the request runs, so a double click cannot save the
+  // same new card twice.
+  setBusy(saveBtn, true, 'Saving...');
+  const { status, body } = await track(editingId
+    ? updateCard({ id: editingId, ...card })
+    : createCard(card));
+  setBusy(saveBtn, false);
 
-  saveBtn.disabled = false;
-  if (redirectIfLoggedOut(status)) return;
+  if (status === 401) return goToLogin();
 
   if (!body.ok) {
-    const errorEl = document.getElementById('card-form-error');
-    errorEl.textContent = body.error;
-    errorEl.hidden = false;
+    showFormError(body.error, fieldForError(body.error));
     return;
   }
 
+  const message = editingId ? `"${card.name_en}" was updated.` : `"${card.name_en}" joined your collection.`;
   closeForm();
-  showListError('');
-  loadCards();
+  clearToasts('error');
+  await loadCards();
+  notify(message);
 });
 
-async function handleDelete(card) {
-  if (!confirm(`Delete "${card.name_en}"? This cannot be undone.`)) return;
+// Asks for confirmation and, on "Delete", runs the request while the dialog
+// stays open with a busy button, so it never closes before the server
+// answered. Resolves to the API result, or null when the card was kept.
+function confirmAndDelete(card) {
+  const dialog = document.getElementById('confirm-dialog');
+  const form = dialog.querySelector('form');
+  const confirmBtn = form.querySelector('[value=confirm]');
+  const cancelBtn = form.querySelector('[value=cancel]');
+  let running = false;
 
-  const { status, body } = await deleteCard(card.id);
-  if (redirectIfLoggedOut(status)) return;
+  document.getElementById('confirm-message').textContent = `Delete "${card.name_en}"? This cannot be undone.`;
 
-  showListError(body.ok ? '' : `Could not delete "${card.name_en}". ${body.error}`);
-  loadCards();
+  return new Promise((resolve) => {
+    const onSubmit = async (event) => {
+      if (event.submitter?.value !== 'confirm') return;
+      event.preventDefault();
+      running = true;
+      setBusy(confirmBtn, true, 'Deleting...');
+      cancelBtn.disabled = true;
+
+      const result = await track(deleteCard(card.id));
+
+      setBusy(confirmBtn, false);
+      cancelBtn.disabled = false;
+      running = false;
+      resolve(result);
+      dialog.close();
+    };
+    // Esc is ignored while the request runs, it cannot be taken back.
+    const onCancel = (event) => {
+      if (running) event.preventDefault();
+    };
+    const onClose = () => {
+      form.removeEventListener('submit', onSubmit);
+      dialog.removeEventListener('cancel', onCancel);
+      resolve(null);
+    };
+
+    form.addEventListener('submit', onSubmit);
+    dialog.addEventListener('cancel', onCancel);
+    dialog.addEventListener('close', onClose, { once: true });
+    dialog.showModal();
+  });
 }
+
+async function handleDelete(card) {
+  const result = await confirmAndDelete(card);
+  if (!result) return;
+
+  if (result.status === 401) return goToLogin();
+
+  if (result.body.ok) {
+    // The card dissolves before the list reloads without it.
+    document.querySelectorAll(`[data-id="${card.id}"]`).forEach((el) => el.classList.add('is-removing'));
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    clearToasts('error');
+    await loadCards();
+    notify(`"${card.name_en}" was removed from your collection.`);
+  } else {
+    await loadCards();
+    notify(`"${card.name_en}" could not be deleted. ${result.body.error}`, 'error');
+  }
+}
+
+document.querySelectorAll('[data-filter]').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    activeGame = chip.dataset.filter;
+    document.querySelectorAll('[data-filter]').forEach((other) => {
+      other.setAttribute('aria-pressed', String(other === chip));
+    });
+    render();
+  });
+});
+
+document.getElementById('search').addEventListener('input', (event) => {
+  searchQuery = event.target.value;
+  render();
+});
+
+document.querySelectorAll('button[data-view]').forEach((button) => {
+  button.addEventListener('click', () => setView(button.dataset.view));
+});
+
+// Esc closes the drawer like Cancel, except while a save is running.
+document.getElementById('card-form-section').addEventListener('cancel', (event) => {
+  event.preventDefault();
+  if (!isSaving()) closeForm();
+});
 
 document.getElementById('new-card-btn').addEventListener('click', () => openForm(null));
 document.getElementById('cancel-card-btn').addEventListener('click', closeForm);
 
-document.getElementById('logout-btn').addEventListener('click', async () => {
-  const { body } = await logout();
+document.getElementById('retry-list').addEventListener('click', (event) => {
+  setBusy(event.currentTarget, true, 'Loading...');
+  loadCards();
+});
+
+const logoutBtn = document.getElementById('logout-btn');
+logoutBtn.addEventListener('click', async () => {
+  setBusy(logoutBtn, true, 'Logging out...');
+  const { body } = await track(logout());
 
   if (!body.ok) {
-    showListError(`Could not log out. ${body.error}`);
+    setBusy(logoutBtn, false);
+    notify(`Could not log out. ${body.error}`, 'error');
     return;
   }
 
   window.location.href = 'login.html';
 });
 
+setView(savedView());
 loadCards();

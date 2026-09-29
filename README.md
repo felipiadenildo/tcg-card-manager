@@ -1,4 +1,4 @@
-# TCG Card Manager (Vanilla Stack)
+# TCG Card Manager (Modern TCG)
 
 An administrative portal for managing Magic: The Gathering, Pokémon, and Yu-Gi-Oh! cards, with login
 authentication, full CRUD functionality, and an edition selector that depends on the chosen game. Built as
@@ -7,8 +7,9 @@ no back-end or front-end frameworks.
 
 ## Branch strategy
 
-This `main` branch is the minimal, unstyled baseline: exactly what the challenge asks for, functionally
-complete, with plain HTML and CSS and no visual theme applied. Other branches build different visual
+This is the `theme/modern-tcg` branch. The `main` branch is the minimal, unstyled baseline: exactly what
+the challenge asks for, functionally complete, with plain HTML and CSS and no visual theme applied. Theme
+branches like this one build different visual
 styles on top of this same functional base, as a portfolio exercise. The PHP API and `js/api.js` are the
 same in every branch, only the pages, the CSS, and the rendering code in `js/dashboard.js` change.
 
@@ -19,6 +20,39 @@ same in every branch, only the pages, the CSS, and the rendering code in `js/das
 | `theme/modern-tcg` | Inspired by current digital TCG platforms and collection apps (MTG Arena, Pokémon TCG Live, Yu-Gi-Oh! Master Duel), with a card grid and foil effects. |
 
 This is a study and portfolio project, with no affiliation to the original brands.
+
+## Theme: modern TCG
+
+Takes its cues from current digital card games and collection apps (MTG Arena, Pokémon TCG Live,
+Yu-Gi-Oh! Master Duel, and trackers like Collectr), where the collection is shown as cards first and
+as a list second.
+
+- **Cards drawn in CSS.** The grid view shows each record as a card, with a frame, name bar, art area and
+  text box styled after its game: a dark brown frame for Magic, a yellow border for Pokémon and a purple
+  frame with gold trim for Yu-Gi-Oh!. There are no images, so nothing depends on external artwork.
+- **Foil and tilt.** Hovering a card tilts it toward the pointer and moves a holographic highlight across
+  it. `js/dashboard.js` only updates CSS variables (`--mx`, `--my`, `--rx`, `--ry`), and the effect is
+  turned off on touch devices and for users who ask for reduced motion.
+- **Collection tools, all client side.** Filter chips by game with live counts, a search over names and
+  editions, and a Grid or List toggle (remembered in `localStorage`). The list view is the same table as
+  `main`. The API is untouched: filtering works on the list already loaded, with no extra requests.
+- **Drawer and dialog.** The card form opens in a side drawer over the dimmed page and closes with
+  Cancel or Esc. The drawer is a native modal `<dialog>`, so it appears in front of the collection
+  wherever the user clicked, and keyboard focus cannot wander into the page behind it. Deleting a card asks for confirmation in a native `<dialog>`, with Cancel focused by
+  default.
+- **Every request shows its state.** A gradient bar runs across the top while anything loads, buttons
+  switch to a ring spinner with a label ("Logging in...", "Saving...", "Deleting..."), the collection
+  shows shimmering placeholder cards until it arrives, and a "Still working" toast appears when the
+  server takes more than 5 seconds. The delete dialog stays open until the server answers, and a
+  deleted card dissolves before the list reloads.
+- **Errors say what to do next.** A wrong password shakes the form, makes both fields glow red and
+  selects the password again, with an eye button to show it and a Caps Lock chip. Messages slide in as
+  toasts at the bottom right: successes fade on their own, errors stay until dismissed. A collection or
+  edition list that fails to load shows the reason and a "Try again" button, going offline shows a
+  banner, and an expired session returns to the login page with a message. The shared helpers live in
+  `js/feedback.js`.
+- **Dark stage.** A dark background with soft color glows, frosted glass panels (`backdrop-filter`) and
+  the Oxanium variable font, served from `public/fonts` with its OFL license.
 
 ## Status
 
