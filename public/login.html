@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="login-page">
+  <div class="progress-bar" aria-hidden="true"></div>
+
   <div class="login-layout">
     <div class="card-fan" aria-hidden="true">
       <div class="tcg-card tcg-card-back" data-game="magic"></div>
@@ -19,20 +21,33 @@
       <h1>Welcome back</h1>
       <p class="muted">Magic, Pok&eacute;mon and Yu-Gi-Oh! in one collection.</p>
 
-      <form id="login-form">
+      <p id="offline-banner" class="notice notice-warning" role="alert" hidden>You are offline. Logging in will work again once you reconnect.</p>
+      <p id="login-notice" class="notice" role="status" hidden></p>
+
+      <form id="login-form" novalidate>
         <label for="email">Email</label>
-        <input type="email" id="email" autocomplete="username" required>
+        <input type="email" id="email" autocomplete="username" data-error-id="email-error" required>
+        <p id="email-error" class="field-error" hidden></p>
 
         <label for="password">Password</label>
-        <input type="password" id="password" autocomplete="current-password" required>
+        <div class="password-field">
+          <input type="password" id="password" autocomplete="current-password" data-error-id="password-error" aria-describedby="caps-hint" required>
+          <button type="button" id="show-password" class="icon-btn" aria-label="Show password" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="eye" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle class="eye" cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg>
+          </button>
+        </div>
+        <p id="password-error" class="field-error" hidden></p>
+        <p id="caps-hint" class="chip-hint" hidden>Caps Lock is on</p>
 
         <p id="login-error" class="error" role="alert" hidden></p>
+        <p id="slow-notice" class="slow-notice" role="status" hidden>Still working, the server is slower than usual.</p>
 
         <button type="submit" class="btn btn-primary">Log in</button>
       </form>
     </main>
   </div>
   <script src="js/api.js"></script>
+  <script src="js/feedback.js"></script>
   <script src="js/login.js"></script>
 </body>
 </html>

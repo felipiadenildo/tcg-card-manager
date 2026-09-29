@@ -11,10 +11,14 @@ requireLoginOrRedirect();
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <div class="progress-bar" aria-hidden="true"></div>
+
   <header class="topbar">
     <p class="logo">TCG<span>Card Manager</span></p>
     <button id="logout-btn" class="btn btn-ghost">Log out</button>
   </header>
+
+  <p id="offline-banner" class="offline-banner" role="alert" hidden>You are offline. Changes cannot be saved until you reconnect.</p>
 
   <main class="container">
     <section class="hero">
@@ -27,10 +31,10 @@ requireLoginOrRedirect();
 
     <div class="toolbar">
       <div class="game-filters" role="group" aria-label="Filter by game">
-        <button type="button" class="chip" data-filter="all" aria-pressed="true">All <span data-count="all">0</span></button>
-        <button type="button" class="chip" data-filter="magic" aria-pressed="false">Magic <span data-count="magic">0</span></button>
-        <button type="button" class="chip" data-filter="pokemon" aria-pressed="false">Pok&eacute;mon <span data-count="pokemon">0</span></button>
-        <button type="button" class="chip" data-filter="yugioh" aria-pressed="false">Yu-Gi-Oh! <span data-count="yugioh">0</span></button>
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">All <span data-count="all">&middot;&middot;&middot;</span></button>
+        <button type="button" class="chip" data-filter="magic" aria-pressed="false">Magic <span data-count="magic">&middot;&middot;&middot;</span></button>
+        <button type="button" class="chip" data-filter="pokemon" aria-pressed="false">Pok&eacute;mon <span data-count="pokemon">&middot;&middot;&middot;</span></button>
+        <button type="button" class="chip" data-filter="yugioh" aria-pressed="false">Yu-Gi-Oh! <span data-count="yugioh">&middot;&middot;&middot;</span></button>
       </div>
 
       <div class="toolbar-right">
@@ -44,8 +48,12 @@ requireLoginOrRedirect();
       </div>
     </div>
 
-    <div id="collection" data-view="grid">
-      <ul id="cards-grid" class="card-grid"></ul>
+    <div id="collection" data-view="grid" aria-busy="true">
+      <ul id="cards-grid" class="card-grid">
+        <?php for ($i = 0; $i < 5; $i++): ?>
+        <li class="card-item" aria-hidden="true"><div class="tcg-card skeleton-card"></div></li>
+        <?php endfor; ?>
+      </ul>
 
       <div class="glass table-wrap">
         <table>
@@ -57,29 +65,41 @@ requireLoginOrRedirect();
       </div>
 
       <p id="empty-state" class="empty" hidden></p>
+
+      <div id="list-error" class="list-error glass" hidden>
+        <p id="list-error-message" role="alert"></p>
+        <button type="button" id="retry-list" class="btn btn-primary">Try again</button>
+      </div>
     </div>
 
     <section id="card-form-section" class="drawer glass" hidden aria-labelledby="card-form-title">
       <h2 id="card-form-title">New card</h2>
-      <form id="card-form">
+      <form id="card-form" novalidate>
         <label for="name-en">Name (English)</label>
-        <input type="text" id="name-en" required>
+        <input type="text" id="name-en" maxlength="150" data-error-id="name-en-error" required>
+        <p id="name-en-error" class="field-error" hidden></p>
 
         <label for="name-pt">Name (Portuguese)</label>
-        <input type="text" id="name-pt">
+        <input type="text" id="name-pt" maxlength="150">
 
         <label for="card-game">Card Game</label>
-        <select id="card-game" required>
+        <select id="card-game" data-error-id="card-game-error" required>
           <option value="">Select...</option>
           <option value="magic">Magic: The Gathering</option>
           <option value="pokemon">Pokémon</option>
           <option value="yugioh">Yu-Gi-Oh!</option>
         </select>
+        <p id="card-game-error" class="field-error" hidden></p>
 
         <label for="edition">Edition</label>
-        <select id="edition" required disabled>
-          <option value="">Select a Card Game first...</option>
-        </select>
+        <div class="select-wrap">
+          <select id="edition" required disabled data-error-id="edition-error">
+            <option value="">Select a Card Game first...</option>
+          </select>
+          <span id="edition-spinner" class="spinner" aria-hidden="true" hidden></span>
+        </div>
+        <p id="edition-error" class="field-error" role="alert" hidden></p>
+        <button type="button" id="retry-editions" class="btn btn-ghost btn-small" hidden>Try loading editions again</button>
 
         <p id="card-form-error" class="error" role="alert" hidden></p>
 
@@ -90,6 +110,9 @@ requireLoginOrRedirect();
       </form>
     </section>
   </main>
+
+  <div id="toasts" class="toasts"></div>
+  <p id="slow-notice" class="toast toast-info slow-notice" role="status" hidden>Still working, the server is slower than usual.</p>
 
   <dialog id="confirm-dialog" class="glass" aria-labelledby="confirm-message">
     <form method="dialog">
@@ -102,6 +125,7 @@ requireLoginOrRedirect();
   </dialog>
 
   <script src="js/api.js"></script>
+  <script src="js/feedback.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
 </html>
