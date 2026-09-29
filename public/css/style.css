@@ -560,7 +560,11 @@ dialog.form-dialog {
 }
 
 .form-dialog-header h2 {
+  min-width: 0;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 dialog.form-dialog form {
@@ -571,6 +575,68 @@ dialog.form-dialog form {
 .btn-icon {
   min-width: 48px;
   padding: 0.6rem;
+}
+
+/* On wider screens the fields sit in two columns (both names, then game
+   and edition), which halves the height of the form so it fits on a
+   laptop screen without scrolling. Inputs are pushed to the bottom of each
+   field, so the boxes line up even when one side has a hint above it. */
+@media (min-width: 761px) {
+  dialog.form-dialog {
+    width: min(880px, calc(100vw - 2rem));
+  }
+
+  dialog.form-dialog form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.5rem;
+  }
+
+  dialog.form-dialog .field > input,
+  dialog.form-dialog .field > select,
+  dialog.form-dialog .select-row {
+    margin-top: auto;
+  }
+
+  dialog.form-dialog .error-summary,
+  dialog.form-dialog .discard-bar,
+  dialog.form-dialog .form-actions {
+    grid-column: 1 / -1;
+  }
+
+  dialog.form-dialog .error-summary {
+    padding: 0.7rem 1rem;
+  }
+
+  dialog.form-dialog .error-summary h3 {
+    margin-bottom: 0.2rem;
+  }
+}
+
+/* Short windows: a little less padding around the form and the login. */
+@media (max-height: 760px) {
+  .form-dialog-header {
+    padding-top: 0.9rem;
+    padding-bottom: 0.75rem;
+  }
+
+  dialog.form-dialog form {
+    gap: 1rem;
+    padding-top: 1.1rem;
+    padding-bottom: 1.1rem;
+  }
+
+  .login-panel {
+    padding: 1.5rem 2rem;
+  }
+
+  .lead {
+    margin-bottom: 1.1rem;
+  }
+
+  .login-page form {
+    gap: 1rem;
+  }
 }
 
 .discard-bar {
