@@ -2,24 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>TCG Card Manager - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TCG Card Manager (Modern TCG) - Sign in</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <main>
-    <h1>TCG Card Manager</h1>
-    <form id="login-form">
-      <label for="email">Email</label>
-      <input type="email" id="email" required>
+<body class="login-page">
+  <div class="login-layout">
+    <div class="card-fan" aria-hidden="true">
+      <div class="tcg-card tcg-card-back" data-game="magic"></div>
+      <div class="tcg-card tcg-card-back" data-game="yugioh"></div>
+      <div class="tcg-card tcg-card-back" data-game="pokemon"></div>
+    </div>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" required>
+    <main class="glass login-panel">
+      <p class="eyebrow">TCG Card Manager</p>
+      <h1>Welcome back</h1>
+      <p class="muted">Magic, Pok&eacute;mon and Yu-Gi-Oh! in one collection.</p>
 
-      <p id="login-error" class="error" role="alert" hidden></p>
+      <form id="login-form">
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="username" required>
 
-      <button type="submit">Log in</button>
-    </form>
-  </main>
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+
+        <p id="login-error" class="error" role="alert" hidden></p>
+
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </form>
+    </main>
+  </div>
   <script src="js/api.js"></script>
   <script src="js/login.js"></script>
 </body>
