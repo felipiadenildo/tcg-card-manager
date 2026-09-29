@@ -241,8 +241,9 @@ function openForm(card) {
   hideFormError();
   resetEditionSelect();
 
-  document.getElementById('card-form-section').hidden = false;
-  document.body.classList.add('drawer-open');
+  // A modal dialog slides in from the right, in front of the collection.
+  // Focus stays inside it and returns to the button that opened it.
+  document.getElementById('card-form-section').showModal();
 
   if (card) {
     document.getElementById('name-en').value = card.name_en;
@@ -255,8 +256,7 @@ function openForm(card) {
 }
 
 function closeForm() {
-  document.getElementById('card-form-section').hidden = true;
-  document.body.classList.remove('drawer-open');
+  document.getElementById('card-form-section').close();
   editingId = null;
   editionsRequestToken += 1;
 }
@@ -472,11 +472,10 @@ document.querySelectorAll('button[data-view]').forEach((button) => {
   button.addEventListener('click', () => setView(button.dataset.view));
 });
 
-document.addEventListener('keydown', (event) => {
-  const drawer = document.getElementById('card-form-section');
-  if (event.key === 'Escape' && !drawer.hidden && !isSaving()) {
-    closeForm();
-  }
+// Esc closes the drawer like Cancel, except while a save is running.
+document.getElementById('card-form-section').addEventListener('cancel', (event) => {
+  event.preventDefault();
+  if (!isSaving()) closeForm();
 });
 
 document.getElementById('new-card-btn').addEventListener('click', () => openForm(null));

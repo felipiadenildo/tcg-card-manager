@@ -72,7 +72,7 @@ requireLoginOrRedirect();
       </div>
     </div>
 
-    <section id="card-form-section" class="drawer glass" hidden aria-labelledby="card-form-title">
+    <dialog id="card-form-section" class="drawer glass" aria-labelledby="card-form-title">
       <h2 id="card-form-title">New card</h2>
       <form id="card-form" novalidate>
         <label for="name-en">Name (English)</label>
@@ -108,7 +108,7 @@ requireLoginOrRedirect();
           <button type="button" id="cancel-card-btn" class="btn btn-ghost">Cancel</button>
         </div>
       </form>
-    </section>
+    </dialog>
   </main>
 
   <div id="toasts" class="toasts"></div>

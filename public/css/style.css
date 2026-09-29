@@ -706,33 +706,26 @@ tbody tr:hover {
 .game-pill[data-game="pokemon"] { color: #fde047; background: rgba(37, 99, 235, 0.3); }
 .game-pill[data-game="yugioh"] { color: #e9d5ff; background: rgba(147, 51, 234, 0.3); }
 
-/* Form drawer, sliding in from the right over a dimmed page */
+/* Form drawer: a modal dialog that slides in from the right over the
+   dimmed, blurred collection. */
 
-body.drawer-open::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 15;
-  background: rgba(3, 4, 10, 0.6);
-  backdrop-filter: blur(3px);
-}
-
-.drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 20;
+dialog.drawer {
+  inset: 0 0 0 auto;
   width: min(460px, 100vw);
-  height: 100vh;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
   padding: 2rem;
   overflow-y: auto;
   border-radius: var(--radius) 0 0 var(--radius);
-  background: rgba(16, 18, 34, 0.94);
+  background: rgba(16, 18, 34, 0.96);
   animation: slide-in 0.25s ease-out;
 }
 
-.drawer[hidden] {
-  display: none;
+dialog.drawer::backdrop {
+  background: rgba(3, 4, 10, 0.6);
+  backdrop-filter: blur(3px);
 }
 
 .drawer h2 {
@@ -1156,7 +1149,7 @@ td:nth-child(-n+2) {
     gap: 0.4rem;
   }
 
-  .drawer {
+  dialog.drawer {
     border-radius: 0;
   }
 }
