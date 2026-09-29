@@ -1,41 +1,592 @@
-body {
-  font-family: sans-serif;
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+/* Game Boy and Game Boy Color theme.
+   Every screen color comes from four shades, --c0 (darkest) to --c3
+   (lightest), the same limit the original hardware had. Switching palettes
+   only swaps these variables, see js/palette.js. */
+
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('../fonts/press-start-2p.woff2') format('woff2');
+  font-display: swap;
 }
 
-header {
+:root,
+:root[data-palette="dmg"] {
+  --c0: #0f380f;
+  --c1: #306230;
+  --c2: #8bac0f;
+  --c3: #9bbc0f;
+  --shell: #c7c6bd;
+  --shell-shade: #a9a79c;
+  --bezel: #53535f;
+  --shell-ink: #2b2b36;
+}
+
+:root[data-palette="pocket"] {
+  --c0: #1b1b1b;
+  --c1: #4c4c44;
+  --c2: #a3a58e;
+  --c3: #c8cbb2;
+  --shell: #b9bdc4;
+  --shell-shade: #979ba3;
+  --bezel: #383838;
+  --shell-ink: #1f1f24;
+}
+
+:root[data-palette="berry"] {
+  --c0: #2a0a12;
+  --c1: #9c1d3a;
+  --c2: #f2a08a;
+  --c3: #fdebd9;
+  --shell: #c8243f;
+  --shell-shade: #9e1a31;
+  --bezel: #2d2d35;
+  --shell-ink: #ffffff;
+}
+
+:root[data-palette="grape"] {
+  --c0: #1d0b33;
+  --c1: #5a2d91;
+  --c2: #c3a3e6;
+  --c3: #f3eafb;
+  --shell: #6a3fa0;
+  --shell-shade: #502e7c;
+  --bezel: #2d2d35;
+  --shell-ink: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--shell-shade);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 24px 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--c0);
+  background:
+    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.08) 1px, transparent 0) 0 0 / 6px 6px,
+    var(--shell-shade);
+}
+
+/* Console body, bezel and screen */
+
+.console {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 28px 28px 20px;
+  background: var(--shell);
+  border-radius: 14px 14px 64px 14px;
+  box-shadow: inset -6px -6px 0 var(--shell-shade), 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.console-small {
+  max-width: 540px;
+}
+
+.bezel {
+  padding: 14px 36px 36px;
+  background: var(--bezel);
+  border-radius: 10px 10px 44px 10px;
+}
+
+.bezel-label {
   display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 8px;
+  color: #c9c9d3;
+  letter-spacing: 1px;
+}
+
+.bezel-label::after {
+  content: '';
+  flex: 1;
+  height: 8px;
+  border-top: 2px solid #8a2f6a;
+  border-bottom: 2px solid #2f3a8a;
+}
+
+.led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e0243a;
+  box-shadow: 0 0 6px #ff4d5e;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px) 0 0 / 3px 3px,
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px) 0 0 / 3px 3px,
+    var(--c2);
+  box-shadow: inset 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.screen main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.screen main > .window {
+  align-self: stretch;
+}
+
+/* Text box window, the bordered box every GB game draws its menus in.
+   The clip-path trims the corners so they look like chunky pixels
+   instead of smooth rounded edges. */
+
+.window {
+  padding: 20px;
+  background: var(--c3);
+  border: 4px solid var(--c0);
+  box-shadow: inset 0 0 0 3px var(--c3), inset 0 0 0 6px var(--c1);
+  clip-path: polygon(
+    4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px),
+    calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px
+  );
+}
+
+.window-bar {
+  display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+h1,
+h2 {
+  margin: 0;
+  font-weight: normal;
+  text-transform: uppercase;
 }
 
-th, td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: left;
+h1 {
+  font-size: 16px;
 }
+
+h2 {
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.card-count {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--c1);
+}
+
+/* Title screen */
+
+.title-logo {
+  margin: 12px 0 0;
+  font-size: 48px;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--c0);
+  text-shadow: 4px 4px 0 var(--c1);
+}
+
+.title-logo span {
+  display: block;
+  margin-top: 14px;
+  font-size: 14px;
+  text-shadow: 2px 2px 0 var(--c3);
+}
+
+.title-games {
+  margin: 0;
+  font-size: 8px;
+  text-align: center;
+  color: var(--c0);
+}
+
+/* Buttons. The arrow cursor on the left is the same pointer the games
+   used to mark the selected menu option. */
+
+button {
+  position: relative;
+  padding: 10px 14px 10px 28px;
+  font: inherit;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--c0);
+  background: var(--c3);
+  border: 3px solid var(--c0);
+  cursor: pointer;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 8px;
+  height: 10px;
+  margin-top: -5px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  visibility: hidden;
+}
+
+button:hover::before,
+button:focus-visible::before {
+  visibility: visible;
+  animation: blink 0.8s steps(1) infinite;
+}
+
+button:focus-visible {
+  outline: none;
+  color: var(--c3);
+  background: var(--c0);
+}
+
+button:active {
+  transform: translate(2px, 2px);
+}
+
+#new-card-btn,
+#login-form [type=submit],
+#card-form [type=submit] {
+  color: var(--c3);
+  background: var(--c1);
+  border-color: var(--c0);
+}
+
+.btn-start {
+  align-self: center;
+  margin-top: 8px;
+  padding: 14px 20px 14px 34px;
+  font-size: 13px;
+}
+
+@keyframes blink {
+  50% {
+    visibility: hidden;
+  }
+}
+
+/* Palette picker, drawn like the rubber Select and Start buttons */
+
+.palette-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.palette-picker button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  font-size: 8px;
+  color: var(--shell-ink);
+  background: none;
+  border: none;
+}
+
+.palette-picker button::before {
+  position: static;
+  width: 44px;
+  height: 12px;
+  margin: 0;
+  visibility: visible;
+  border-radius: 6px;
+  background: var(--swatch);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.3), 0 0 0 2px var(--shell-ink);
+  clip-path: none;
+  transform: rotate(-20deg);
+  animation: none;
+}
+
+.palette-picker button[aria-pressed="true"] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.palette-picker button[aria-pressed="true"]::before {
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.3), 0 0 0 3px var(--shell-ink);
+}
+
+.palette-picker button:focus-visible {
+  outline: 3px solid var(--shell-ink);
+  outline-offset: 4px;
+  color: var(--shell-ink);
+  background: none;
+}
+
+[data-palette-option="dmg"] { --swatch: #8bac0f; }
+[data-palette-option="pocket"] { --swatch: #a3a58e; }
+[data-palette-option="berry"] { --swatch: #e0506a; }
+[data-palette-option="grape"] { --swatch: #9a6ad6; }
+
+/* Forms */
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-width: 400px;
-  margin-top: 1rem;
+  gap: 8px;
 }
 
-#card-form-section {
-  border: 1px solid #ccc;
-  padding: 1rem;
+#card-form {
+  max-width: 480px;
+}
+
+label {
+  margin-top: 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--c0);
+  background: var(--c3);
+  border: 3px solid var(--c0);
+  border-radius: 0;
+}
+
+select {
+  appearance: none;
+  padding-right: 40px;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--c0) 50%) calc(100% - 20px) 50% / 7px 7px no-repeat,
+    linear-gradient(135deg, var(--c0) 50%, transparent 50%) calc(100% - 13px) 50% / 7px 7px no-repeat,
+    var(--c3);
+  cursor: pointer;
+}
+
+input:focus,
+select:focus {
+  outline: 3px solid var(--c1);
+  outline-offset: 2px;
+}
+
+select:disabled {
+  color: var(--c1);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .error {
-  color: red;
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  font-size: 10px;
+  color: var(--c3);
+  background: var(--c0);
+}
+
+/* Card list */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 10px;
+  font-size: 9px;
+  font-weight: normal;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--c3);
+  background: var(--c0);
+}
+
+td {
+  padding: 12px 10px;
+  font-size: 10px;
+  vertical-align: middle;
+  border-bottom: 3px dotted var(--c2);
+}
+
+tbody tr:hover {
+  background: color-mix(in srgb, var(--c2) 45%, var(--c3));
+}
+
+td:last-child {
+  white-space: nowrap;
+}
+
+td:last-child button {
+  padding: 6px 10px 6px 24px;
+  font-size: 9px;
+}
+
+td:last-child button + button {
+  margin-left: 8px;
+}
+
+td.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--c1);
+}
+
+.game-badge {
+  display: inline-block;
+  justify-self: start;
+  padding: 4px 6px;
+  font-size: 8px;
+  line-height: 1.5;
+  border: 2px solid var(--c0);
+}
+
+.game-badge[data-game="magic"] {
+  background: var(--c2);
+}
+
+.game-badge[data-game="pokemon"] {
+  background: var(--c3);
+}
+
+.game-badge[data-game="yugioh"] {
+  color: var(--c3);
+  background: var(--c0);
+}
+
+/* Confirmation text box, pinned near the bottom of the screen like the
+   dialogue boxes in the games, with the blinking arrow asking for input. */
+
+dialog {
+  width: min(560px, calc(100vw - 32px));
+  margin: auto auto 12vh;
+  color: var(--c0);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+dialog p {
+  margin: 0;
+  font-size: 11px;
+}
+
+dialog::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  width: 10px;
+  height: 8px;
+  background: var(--c0);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  animation: blink 0.8s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Small screens: less console chrome, and each table row becomes its own
+   block with the column name written next to each value. */
+
+@media (max-width: 720px) {
+  body {
+    padding: 12px 8px;
+  }
+
+  .console {
+    padding: 14px 12px 16px;
+    border-radius: 10px 10px 36px 10px;
+  }
+
+  .bezel {
+    padding: 10px 12px 18px;
+    border-radius: 8px 8px 26px 8px;
+  }
+
+  .screen {
+    padding: 10px;
+  }
+
+  .window {
+    padding: 14px;
+  }
+
+  .title-logo {
+    font-size: 36px;
+  }
+
+  input,
+  select {
+    font-size: 16px;
+  }
+
+  thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  tr,
+  td {
+    display: block;
+  }
+
+  tbody tr {
+    padding: 8px 0;
+    border-bottom: 3px dotted var(--c1);
+  }
+
+  td {
+    display: grid;
+    grid-template-columns: 9em 1fr;
+    gap: 8px;
+    padding: 6px 4px;
+    border: none;
+  }
+
+  td[data-label]::before {
+    content: attr(data-label);
+    font-size: 8px;
+    color: var(--c1);
+    text-transform: uppercase;
+  }
+
+  td:last-child {
+    display: flex;
+    padding-top: 10px;
+  }
+
+  td.empty {
+    display: block;
+  }
 }

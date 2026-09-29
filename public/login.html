@@ -2,24 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>TCG Card Manager - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TCG Card Manager (GBC Style) - Login</title>
+  <script src="js/palette.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main>
-    <h1>TCG Card Manager</h1>
-    <form id="login-form">
-      <label for="email">Email</label>
-      <input type="email" id="email" required>
+  <div class="console console-small">
+    <div class="bezel">
+      <p class="bezel-label" aria-hidden="true"><span class="led"></span>TCG CARD MANAGER</p>
+      <main class="screen">
+        <h1 class="title-logo">TCG<span>Card Manager</span></h1>
+        <p class="title-games">Magic &middot; Pok&eacute;mon &middot; Yu-Gi-Oh!</p>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" required>
+        <form id="login-form" class="window">
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="username" required>
 
-      <p id="login-error" class="error" role="alert" hidden></p>
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="current-password" required>
 
-      <button type="submit">Log in</button>
-    </form>
-  </main>
+          <p id="login-error" class="error" role="alert" hidden></p>
+
+          <button type="submit" class="btn-start">Press Start</button>
+        </form>
+      </main>
+    </div>
+
+    <nav class="palette-picker" aria-label="Screen palette">
+      <button type="button" data-palette-option="dmg" title="Original green screen">DMG</button>
+      <button type="button" data-palette-option="pocket" title="Gray screen">Pocket</button>
+      <button type="button" data-palette-option="berry" title="Red color palette">Berry</button>
+      <button type="button" data-palette-option="grape" title="Purple color palette">Grape</button>
+    </nav>
+  </div>
   <script src="js/api.js"></script>
   <script src="js/login.js"></script>
 </body>

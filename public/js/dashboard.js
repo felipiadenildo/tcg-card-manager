@@ -3,35 +3,26 @@ const GAME_LABELS = { magic: 'Magic: The Gathering', pokemon: 'Pokémon', yugioh
 let editingId = null;
 let editionsRequestToken = 0;
 
-// A 401 means the session ended (logged out in another tab, or expired), so
-// the only useful next step is the login page. Returns true when it redirects.
-function redirectIfLoggedOut(status) {
-  if (status !== 401) return false;
-  window.location.href = 'login.html';
-  return true;
-}
-
-function showListError(message) {
-  const errorEl = document.getElementById('list-error');
-  errorEl.textContent = message;
-  errorEl.hidden = !message;
-}
-
 async function loadCards() {
-  const { status, body } = await listCards();
-  if (redirectIfLoggedOut(status)) return;
-
-  if (!body.ok) {
-    showListError(`Could not load the cards. ${body.error}`);
-    return;
-  }
-
+  const { body } = await listCards();
   renderTable(body.data);
 }
 
 function renderTable(cards) {
   const tbody = document.getElementById('cards-body');
   tbody.innerHTML = '';
+  document.getElementById('card-count').textContent = `x${String(cards.length).padStart(2, '0')}`;
+
+  if (cards.length === 0) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 5;
+    cell.className = 'empty';
+    cell.textContent = 'No cards in the box yet.';
+    row.appendChild(cell);
+    tbody.appendChild(row);
+    return;
+  }
 
   cards.forEach((card) => {
     const row = document.createElement('tr');
@@ -43,7 +34,11 @@ function renderTable(cards) {
     namePtCell.textContent = card.name_pt || '—';
 
     const gameCell = document.createElement('td');
-    gameCell.textContent = GAME_LABELS[card.card_game];
+    const gameBadge = document.createElement('span');
+    gameBadge.className = 'game-badge';
+    gameBadge.dataset.game = card.card_game;
+    gameBadge.textContent = GAME_LABELS[card.card_game];
+    gameCell.appendChild(gameBadge);
 
     const editionCell = document.createElement('td');
     editionCell.textContent = card.edition_name;
@@ -58,6 +53,13 @@ function renderTable(cards) {
     deleteBtn.addEventListener('click', () => handleDelete(card));
 
     actionsCell.append(editBtn, deleteBtn);
+
+    // Read by the CSS on small screens, where each row stacks into a block
+    // and the column headers are no longer visible above the values.
+    nameEnCell.dataset.label = 'Name (EN)';
+    namePtCell.dataset.label = 'Name (PT)';
+    gameCell.dataset.label = 'Game';
+    editionCell.dataset.label = 'Edition';
     row.append(nameEnCell, namePtCell, gameCell, editionCell, actionsCell);
     tbody.appendChild(row);
   });
@@ -73,10 +75,7 @@ function openForm(card) {
   editionSelect.innerHTML = '<option value="">Select a Card Game first...</option>';
   editionSelect.disabled = true;
 
-  // A modal dialog opens in front of the list, wherever the user clicked,
-  // so there is no scrolling to find the form. It also keeps focus inside
-  // the form and closes with Esc.
-  document.getElementById('card-form-section').showModal();
+  document.getElementById('card-form-section').hidden = false;
 
   if (card) {
     document.getElementById('name-en').value = card.name_en;
@@ -84,10 +83,14 @@ function openForm(card) {
     document.getElementById('card-game').value = card.card_game;
     loadEditions(card.card_game, card.edition_id);
   }
+
+  const section = document.getElementById('card-form-section');
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('name-en').focus({ preventScroll: true });
 }
 
 function closeForm() {
-  document.getElementById('card-form-section').close();
+  document.getElementById('card-form-section').hidden = true;
   editingId = null;
 }
 
@@ -98,22 +101,12 @@ async function loadEditions(game, selectedId) {
   editionSelect.disabled = true;
   editionSelect.innerHTML = '<option value="">Loading editions...</option>';
 
-  const { status, body } = await fetchEditions(game);
+  const { body } = await fetchEditions(game);
 
   // A newer request may have started while this one was in flight. If so,
   // this response is stale and gets dropped instead of overwriting the
   // select with the wrong game's editions.
   if (requestToken !== editionsRequestToken) {
-    return;
-  }
-
-  if (redirectIfLoggedOut(status)) return;
-
-  if (!body.ok) {
-    editionSelect.innerHTML = '<option value="">Could not load editions</option>';
-    const errorEl = document.getElementById('card-form-error');
-    errorEl.textContent = `${body.error} Pick the card game again to retry.`;
-    errorEl.hidden = false;
     return;
   }
 
@@ -154,17 +147,9 @@ document.getElementById('card-form').addEventListener('submit', async (event) =>
     edition_id: document.getElementById('edition').value,
   };
 
-  // Disabled while the request runs, so a double click cannot save the same
-  // new card twice.
-  const saveBtn = event.target.querySelector('[type=submit]');
-  saveBtn.disabled = true;
-
-  const { status, body } = editingId
+  const { body } = editingId
     ? await updateCard({ id: editingId, ...card })
     : await createCard(card);
-
-  saveBtn.disabled = false;
-  if (redirectIfLoggedOut(status)) return;
 
   if (!body.ok) {
     const errorEl = document.getElementById('card-form-error');
@@ -174,17 +159,26 @@ document.getElementById('card-form').addEventListener('submit', async (event) =>
   }
 
   closeForm();
-  showListError('');
   loadCards();
 });
 
+// Same question the browser confirm() used to ask, shown in a game style
+// text box instead. Resolves true only when "Yes" is picked, so Esc or
+// "No" both keep the card.
+function confirmDialog(message) {
+  const dialog = document.getElementById('confirm-dialog');
+  document.getElementById('confirm-message').textContent = message;
+  dialog.returnValue = '';
+  dialog.showModal();
+
+  return new Promise((resolve) => {
+    dialog.addEventListener('close', () => resolve(dialog.returnValue === 'confirm'), { once: true });
+  });
+}
+
 async function handleDelete(card) {
-  if (!confirm(`Delete "${card.name_en}"? This cannot be undone.`)) return;
-
-  const { status, body } = await deleteCard(card.id);
-  if (redirectIfLoggedOut(status)) return;
-
-  showListError(body.ok ? '' : `Could not delete "${card.name_en}". ${body.error}`);
+  if (!(await confirmDialog(`Delete "${card.name_en}"? This cannot be undone.`))) return;
+  await deleteCard(card.id);
   loadCards();
 }
 
@@ -192,13 +186,7 @@ document.getElementById('new-card-btn').addEventListener('click', () => openForm
 document.getElementById('cancel-card-btn').addEventListener('click', closeForm);
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
-  const { body } = await logout();
-
-  if (!body.ok) {
-    showListError(`Could not log out. ${body.error}`);
-    return;
-  }
-
+  await logout();
   window.location.href = 'login.html';
 });
 

@@ -6,56 +6,84 @@ requireLoginOrRedirect();
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>TCG Card Manager - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TCG Card Manager (GBC Style) - Dashboard</title>
+  <script src="js/palette.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header>
-    <h1>Cards</h1>
-    <button id="logout-btn">Log out</button>
-  </header>
+  <div class="console">
+    <div class="bezel">
+      <p class="bezel-label" aria-hidden="true"><span class="led"></span>TCG CARD MANAGER</p>
+      <div class="screen">
+        <header class="window window-bar">
+          <h1>Cards <span id="card-count" class="card-count"></span></h1>
+          <button id="logout-btn">Log out</button>
+        </header>
 
-  <main>
-    <button id="new-card-btn">New card</button>
+        <main>
+          <button id="new-card-btn">New card</button>
 
-    <p id="list-error" class="error" role="alert" hidden></p>
+          <div class="window">
+            <table>
+              <thead>
+                <tr><th>Name (EN)</th><th>Name (PT)</th><th>Game</th><th>Edition</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="cards-body"></tbody>
+            </table>
+          </div>
 
-    <table>
-      <thead>
-        <tr><th>Name (EN)</th><th>Name (PT)</th><th>Game</th><th>Edition</th><th>Actions</th></tr>
-      </thead>
-      <tbody id="cards-body"></tbody>
-    </table>
+          <section id="card-form-section" class="window" hidden>
+            <h2 id="card-form-title">New card</h2>
+            <form id="card-form">
+              <label for="name-en">Name (English)</label>
+              <input type="text" id="name-en" required>
 
-    <dialog id="card-form-section" aria-labelledby="card-form-title">
-      <h2 id="card-form-title">New card</h2>
-      <form id="card-form">
-        <label for="name-en">Name (English)</label>
-        <input type="text" id="name-en" required>
+              <label for="name-pt">Name (Portuguese)</label>
+              <input type="text" id="name-pt">
 
-        <label for="name-pt">Name (Portuguese)</label>
-        <input type="text" id="name-pt">
+              <label for="card-game">Card Game</label>
+              <select id="card-game" required>
+                <option value="">Select...</option>
+                <option value="magic">Magic: The Gathering</option>
+                <option value="pokemon">Pokémon</option>
+                <option value="yugioh">Yu-Gi-Oh!</option>
+              </select>
 
-        <label for="card-game">Card Game</label>
-        <select id="card-game" required>
-          <option value="">Select...</option>
-          <option value="magic">Magic: The Gathering</option>
-          <option value="pokemon">Pokémon</option>
-          <option value="yugioh">Yu-Gi-Oh!</option>
-        </select>
+              <label for="edition">Edition</label>
+              <select id="edition" required disabled>
+                <option value="">Select a Card Game first...</option>
+              </select>
 
-        <label for="edition">Edition</label>
-        <select id="edition" required disabled>
-          <option value="">Select a Card Game first...</option>
-        </select>
+              <p id="card-form-error" class="error" role="alert" hidden></p>
 
-        <p id="card-form-error" class="error" role="alert" hidden></p>
+              <div class="form-actions">
+                <button type="submit">Save</button>
+                <button type="button" id="cancel-card-btn">Cancel</button>
+              </div>
+            </form>
+          </section>
+        </main>
+      </div>
+    </div>
 
-        <button type="submit">Save</button>
-        <button type="button" id="cancel-card-btn">Cancel</button>
-      </form>
-    </dialog>
-  </main>
+    <nav class="palette-picker" aria-label="Screen palette">
+      <button type="button" data-palette-option="dmg" title="Original green screen">DMG</button>
+      <button type="button" data-palette-option="pocket" title="Gray screen">Pocket</button>
+      <button type="button" data-palette-option="berry" title="Red color palette">Berry</button>
+      <button type="button" data-palette-option="grape" title="Purple color palette">Grape</button>
+    </nav>
+  </div>
+
+  <dialog id="confirm-dialog" class="window" aria-labelledby="confirm-message">
+    <form method="dialog">
+      <p id="confirm-message"></p>
+      <div class="form-actions">
+        <button value="confirm">Yes</button>
+        <button value="cancel" autofocus>No</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
