@@ -37,7 +37,8 @@ as a list second.
   editions, and a Grid or List toggle (remembered in `localStorage`). The list view is the same table as
   `main`. The API is untouched: filtering works on the list already loaded, with no extra requests.
 - **Drawer and dialog.** The card form opens in a side drawer over the dimmed page and closes with
-  Cancel or Esc. Deleting a card asks for confirmation in a native `<dialog>`, with Cancel focused by
+  Cancel or Esc. The drawer is a native modal `<dialog>`, so it appears in front of the collection
+  wherever the user clicked, and keyboard focus cannot wander into the page behind it. Deleting a card asks for confirmation in a native `<dialog>`, with Cancel focused by
   default.
 - **Every request shows its state.** A gradient bar runs across the top while anything loads, buttons
   switch to a ring spinner with a label ("Logging in...", "Saving...", "Deleting..."), the collection
