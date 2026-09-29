@@ -38,7 +38,8 @@ This theme takes that as the main requirement and trades visual flair for clarit
   send it twice.
 - **The form opens in a window, and asks before losing work.** "Add a card" and "Edit" open the form as a
   dialog in front of the list, with a title bar and a close button, so it appears where the user is
-  looking. On phones it fills the screen. If something was typed and the user presses Cancel, the close
+  looking. On wider screens the fields sit in two columns, so the whole form fits on a laptop screen
+  without scrolling. On phones it fills the screen. If something was typed and the user presses Cancel, the close
   button or Esc, the form asks "Close the form anyway?" with "Keep editing" as the default, instead of
   throwing the changes away.
 - **Safer delete.** The browser's `confirm()` is replaced by a native `<dialog>` that names the card and
