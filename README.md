@@ -27,8 +27,9 @@ The screens are drawn as if they were running on the handheld itself, borrowing 
 games released for it.
 
 - **A console that fits the window.** The handheld fills the browser window, and the LCD screen scrolls
-  on its own inside the bezel, with the "Cards" header pinned to its top edge. The shell and bezel are
-  kept thin so the screen takes about three quarters of the window, the console grows up to 1760px wide
+  on its own inside the bezel, with the "Cards" header (and its "New card" and "Log out" buttons) pinned
+  to its top edge. The shell and bezel are kept thin so the screen takes about three quarters of the
+  window, the console grows up to 1760px wide
   on large monitors, and on a phone it becomes a tall handheld. On windows up to 760px tall the title
   screen tightens up so the login fits without scrolling. Below 520px of height, where the console would
   get too cramped, the page falls back to scrolling normally.
