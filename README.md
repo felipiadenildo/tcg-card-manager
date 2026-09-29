@@ -38,6 +38,14 @@ games released for it.
 - **In-game confirmation.** Deleting a card opens a native `<dialog>` near the bottom of the screen,
   like the games' dialogue boxes, instead of the browser's `confirm()`. "No" has focus by default, and
   Esc also cancels, so the destructive option is never the one picked by accident.
+- **Loading and errors, game style.** The power LED flickers while a request is in flight, busy buttons
+  read "Now loading" with counting dots, and the card list shows a block by block loading bar. Errors
+  shake the screen and appear in an inverted text box, messages pop up in a dialogue box at the bottom of
+  the screen, and a deleted card flickers out like a fainted monster. Behind the theme the behavior is
+  plain: a wrong password marks both fields with a dashed outline and selects the password again, a
+  Caps Lock warning and a "Show password" box sit under the password, failed loads offer "Try again",
+  slow requests show a "Still loading" notice, going offline shows a banner, and an expired session
+  returns to the title screen with a message. The shared helpers live in `js/feedback.js`.
 - **Readability.** Text stays in the darkest shade on the two lightest ones, the table stacks into
   labeled blocks on small screens, and the blinking stops for users who ask for reduced motion.
 
