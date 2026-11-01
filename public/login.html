@@ -2,25 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>TCG Card Manager - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TCG Card Manager (GBC Style) - Login</title>
+  <script src="js/palette.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main>
-    <h1>TCG Card Manager</h1>
-    <form id="login-form">
-      <label for="email">Email</label>
-      <input type="email" id="email" required>
+  <div class="console console-small">
+    <div class="bezel">
+      <p class="bezel-label" aria-hidden="true"><span class="led"></span>TCG CARD MANAGER</p>
+      <main class="screen">
+        <h1 class="title-logo">TCG<span>Card Manager</span></h1>
+        <p class="title-games">Magic &middot; Pok&eacute;mon &middot; Yu-Gi-Oh!</p>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" required>
+        <p id="offline-banner" class="window window-alert" role="alert" hidden>No connection! Logging in will work again once you are back online.</p>
+        <p id="login-notice" class="window" role="status" hidden></p>
 
-      <p id="login-error" class="error" role="alert" hidden></p>
+        <form id="login-form" class="window" novalidate>
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="username" data-error-id="email-error" required>
+          <p id="email-error" class="field-error" hidden></p>
 
-      <button type="submit">Log in</button>
-    </form>
-  </main>
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="current-password" data-error-id="password-error" aria-describedby="caps-hint" required>
+          <p id="password-error" class="field-error" hidden></p>
+          <p id="caps-hint" class="caps-hint" hidden>CAPS LOCK is on!</p>
+
+          <label class="pixel-check">
+            <input type="checkbox" id="show-password">
+            <span>Show password</span>
+          </label>
+
+          <p id="login-error" class="error" role="alert" hidden></p>
+          <p id="slow-notice" class="slow-notice" role="status" hidden>Still loading... the server is slow today.</p>
+
+          <button type="submit" class="btn-start">Press Start</button>
+        </form>
+      </main>
+    </div>
+
+    <nav class="palette-picker" aria-label="Screen palette">
+      <button type="button" data-palette-option="dmg" title="Original green screen">DMG</button>
+      <button type="button" data-palette-option="pocket" title="Gray screen">Pocket</button>
+      <button type="button" data-palette-option="berry" title="Red color palette">Berry</button>
+      <button type="button" data-palette-option="grape" title="Purple color palette">Grape</button>
+    </nav>
+  </div>
   <script src="js/api.js"></script>
+  <script src="js/feedback.js"></script>
   <script src="js/login.js"></script>
 </body>
 </html>

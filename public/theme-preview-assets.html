@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Asset gallery</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+  <script src="theme-preview-nav.js" defer></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #cfd8e3;
+      margin: 0;
+      padding: 24px;
+    }
+    h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1rem;
+    }
+    h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8rem;
+      margin-top: 40px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 8px;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 6px;
+      padding: 12px;
+      width: 180px;
+      text-align: center;
+      font-size: 0.75rem;
+    }
+    .card .frame {
+      background: repeating-conic-gradient(#e8e8e8 0% 25%, #fff 0% 50%) 50% / 12px 12px;
+      border-radius: 4px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .card img {
+      image-rendering: pixelated;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .card .name {
+      font-family: monospace;
+      word-break: break-all;
+      margin-bottom: 4px;
+    }
+    .card .dims {
+      color: #777;
+    }
+    .card .note {
+      color: #a04;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Asset gallery</h1>
+  <p>Every file in <code>referencias/uteis/assets/</code>, scaled up with <code>image-rendering: pixelated</code> so tiny sprites are actually readable. Checkerboard background shows transparency.</p>
+
+  <h2>World map</h2>
+  <div class="grid">
+    <div class="card"><div class="frame"><img src="assets/gbc-review/world_map_full.png" style="width:100%"></div><div class="name">world_map_full.png</div><div class="dims">162&times;146</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/world_map_title_textbox.png" style="width:100%"></div><div class="name">world_map_title_textbox.png</div><div class="dims">106&times;26</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/world_map_building_cursor_arrow_2x.png" style="width:100%"></div><div class="name">world_map_building_cursor_arrow_2x.png</div><div class="dims">35&times;18, 2 frames</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/world_map_water_deep_ocean_anim_6x.png" style="width:100%"></div><div class="name">world_map_water_deep_ocean_anim_6x.png</div><div class="dims">103&times;18, 6 frames</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/world_map_water_coast_anim_1_9x.png" style="width:100%"></div><div class="name">world_map_water_coast_anim_1_9x.png</div><div class="dims">28&times;30, 3&times;3 grid</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/world_map_water_coast_anim_2_9x.png" style="width:100%"></div><div class="name">world_map_water_coast_anim_2_9x.png</div><div class="dims">28&times;30, 3&times;3 grid</div></div>
+  </div>
+
+  <h2>Cards &amp; deck</h2>
+  <div class="grid">
+    <div class="card"><div class="frame"><img src="assets/gbc-review/card_back_small.png" style="width:60%"></div><div class="name">card_back_small.png</div><div class="dims">12&times;14</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/deck_pile_stack_3.png" style="width:70%"></div><div class="name">deck_pile_stack_3.png</div><div class="dims">16&times;17</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/card_hand_fan_3.png" style="width:75%"></div><div class="name">card_hand_fan_3.png</div><div class="dims">18&times;16</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/discard_pile_cards.png" style="width:75%"></div><div class="name">discard_pile_cards.png</div><div class="dims">18&times;18</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/card_shuffle_anim_sheet.png" style="width:100%"></div><div class="name">card_shuffle_anim_sheet.png</div><div class="dims">52&times;16, 3 frames</div></div>
+  </div>
+
+  <h2>Icons &amp; cursors</h2>
+  <div class="grid">
+    <div class="card"><div class="frame"><img src="assets/gbc-review/icon_cancel_x.png" style="width:40%"></div><div class="name">icon_cancel_x.png</div><div class="dims">8&times;16</div><div class="note">extracted (poketcg2)</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/icon_approve_check.png" style="width:40%"></div><div class="name">icon_approve_check.png</div><div class="dims">8&times;16</div><div class="note">hand-drawn, no source</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/cursor_arrows_right_up_down.png" style="width:60%"></div><div class="name">cursor_arrows_right_up_down.png</div><div class="dims">10&times;30, 3 icons</div></div>
+  </div>
+
+  <h2>Status &amp; text boxes (reference)</h2>
+  <div class="grid">
+    <div class="card"><div class="frame"><img src="assets/gbc-review/portrait_box_character_profile.png" style="width:100%"></div><div class="name">portrait_box_character_profile.png</div><div class="dims">160&times;64</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/textbox_frame_simple.png" style="width:100%"></div><div class="name">textbox_frame_simple.png</div><div class="dims">82&times;34</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/textbox_dialog_sample_text.png" style="width:100%"></div><div class="name">textbox_dialog_sample_text.png</div><div class="dims">96&times;48</div></div>
+    <div class="card"><div class="frame"><img src="assets/gbc-review/textbox_trainer_badge.png" style="width:100%"></div><div class="name">textbox_trainer_badge.png</div><div class="dims">66&times;18</div><div class="note">style reference only</div></div>
+  </div>
+</body>
+</html>

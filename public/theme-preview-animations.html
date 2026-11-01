@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Animation preview</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+  <script src="theme-preview-nav.js" defer></script>
+  <style>
+    :root { --scale: 6; }
+    body {
+      font-family: sans-serif;
+      background: #cfd8e3;
+      margin: 0;
+      padding: 24px;
+    }
+    h1 { font-family: 'Press Start 2P', monospace; font-size: 1rem; }
+    h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8rem;
+      margin-top: 40px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 8px;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    .card { background: #fff; border-radius: 6px; padding: 16px; font-size: 0.8rem; max-width: 260px; }
+    .card p { margin: 8px 0 0; color: #555; line-height: 1.4; }
+    .sprite {
+      image-rendering: pixelated;
+      background-repeat: no-repeat;
+    }
+    .label { font-family: monospace; font-size: 0.72rem; color: #777; margin-top: 6px; }
+
+    /* --- draw-card conceptual sequence --- */
+    .draw-sequence {
+      position: relative;
+      width: 108px;
+      height: 102px;
+      margin: 0 auto;
+    }
+    .draw-sequence img {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      image-rendering: pixelated;
+      width: 96px;
+      animation: drawCardCycle 3s infinite;
+    }
+    .draw-sequence img.step-deck { animation-delay: 0s; }
+    .draw-sequence img.step-fan { animation-delay: 0s; opacity: 0; animation-name: drawCardCycleFan; }
+    @keyframes drawCardCycle {
+      0%, 40% { opacity: 1; }
+      55%, 100% { opacity: 0; }
+    }
+    @keyframes drawCardCycleFan {
+      0%, 40% { opacity: 0; }
+      55%, 100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Animation preview</h1>
+  <p>Real sprite-sheet playback (JS stepping <code>background-position</code>), not just static frames. Scale fixed at &times;6 here for visibility; the real <code>--gbc-px</code> token controls this in the actual theme.</p>
+
+  <h2>World map water</h2>
+  <div class="row">
+    <div class="card">
+      <div class="sprite" id="ocean" style="width:96px;height:108px;background-image:url('assets/gbc-review/world_map_water_deep_ocean_anim_6x.png');"></div>
+      <div class="label">world_map_water_deep_ocean_anim_6x.png &mdash; 6 frames</div>
+    </div>
+    <div class="card">
+      <div class="sprite" id="coast1" style="width:48px;height:48px;background-image:url('assets/gbc-review/world_map_water_coast_anim_1_9x.png');"></div>
+      <div class="label">coast_anim_1 &mdash; 3&times;3 grid, 9 frames</div>
+    </div>
+    <div class="card">
+      <div class="sprite" id="coast2" style="width:48px;height:48px;background-image:url('assets/gbc-review/world_map_water_coast_anim_2_9x.png');"></div>
+      <div class="label">coast_anim_2 &mdash; 3&times;3 grid, 9 frames</div>
+      <p>Grid pitch measured by eye (~9px cells), good enough for this preview. Worth re-checking pixel-exact when this gets wired into the real login screen.</p>
+    </div>
+  </div>
+
+  <h2>Pokémon Dome marker</h2>
+  <div class="row">
+    <div class="card">
+      <div class="sprite" id="arrow" style="width:102px;height:108px;background-image:url('assets/gbc-review/world_map_building_cursor_arrow_2x.png');"></div>
+      <div class="label">world_map_building_cursor_arrow_2x.png &mdash; 2 frames, bounce</div>
+    </div>
+  </div>
+
+  <h2>Loading / shuffle</h2>
+  <div class="row">
+    <div class="card">
+      <div class="sprite" id="shuffle" style="width:96px;height:96px;background-image:url('assets/gbc-review/card_shuffle_anim_sheet.png');"></div>
+      <div class="label">card_shuffle_anim_sheet.png &mdash; 3 frames</div>
+      <p>Candidate for the "loading cards / editions" state (checklist Fase 6).</p>
+    </div>
+  </div>
+
+  <h2>Draw card (concept, not real frames)</h2>
+  <div class="row">
+    <div class="card">
+      <div class="draw-sequence">
+        <img class="step-deck" src="assets/gbc-review/deck_pile_stack_3.png">
+        <img class="step-fan" src="assets/gbc-review/card_hand_fan_3.png">
+      </div>
+      <p>This one is a cross-fade between two unrelated static icons (deck &rarr; hand), not authentic sprite frames from the game. It shows the idea you described &mdash; stacked deck opening into a spread hand &mdash; but the actual in-between motion still needs designing.</p>
+    </div>
+  </div>
+
+  <h2>Delete feedback</h2>
+  <div class="row">
+    <div class="card">
+      <img src="assets/gbc-review/discard_pile_cards.png" style="image-rendering:pixelated; width:72px;">
+      <div class="label">discard_pile_cards.png (static)</div>
+    </div>
+    <div class="card">
+      <img src="assets/gbc-review/icon_cancel_x.png" style="image-rendering:pixelated; width:32px;">
+      <div class="label">icon_cancel_x.png (static)</div>
+    </div>
+  </div>
+
+  <script>
+    // Deep ocean: 6 frames in a single row, each 16x16 native, pitch 17px (1px divider).
+    (function () {
+      const el = document.getElementById('ocean');
+      const scale = 6;
+      el.style.width = 16 * scale + 'px';
+      el.style.height = 16 * scale + 'px';
+      el.style.backgroundSize = `${103 * scale}px ${18 * scale}px`;
+      let i = 0;
+      setInterval(() => {
+        el.style.backgroundPosition = `${-(1 + i * 17) * scale}px ${-1 * scale}px`;
+        i = (i + 1) % 6;
+      }, 160);
+    })();
+
+    // Coast, 3x3 grid, native cell ~9x9/9x10, pitch 9 (x) / measured per-row (y: 1,10,20).
+    function playCoast(id) {
+      const el = document.getElementById(id);
+      const scale = 6;
+      el.style.width = 8 * scale + 'px';
+      el.style.height = 8 * scale + 'px';
+      el.style.backgroundSize = `${28 * scale}px ${30 * scale}px`;
+      const xs = [1, 10, 19];
+      const ys = [1, 10, 20];
+      let i = 0;
+      setInterval(() => {
+        const x = xs[i % 3];
+        const y = ys[Math.floor(i / 3) % 3];
+        el.style.backgroundPosition = `${-x * scale}px ${-y * scale}px`;
+        i = (i + 1) % 9;
+      }, 180);
+    }
+    playCoast('coast1');
+    playCoast('coast2');
+
+    // Arrow marker: 2 frames, pitch 17, bounce back and forth.
+    (function () {
+      const el = document.getElementById('arrow');
+      const scale = 6;
+      el.style.width = 17 * scale + 'px';
+      el.style.height = 18 * scale + 'px';
+      el.style.backgroundSize = `${35 * scale}px ${18 * scale}px`;
+      let i = 0;
+      setInterval(() => {
+        el.style.backgroundPosition = `${-(1 + i * 17) * scale}px 0px`;
+        i = (i + 1) % 2;
+      }, 350);
+    })();
+
+    // Card shuffle: 3 frames, pitch ~17-18, treat as uniform 17.
+    (function () {
+      const el = document.getElementById('shuffle');
+      const scale = 6;
+      el.style.width = 16 * scale + 'px';
+      el.style.height = 16 * scale + 'px';
+      el.style.backgroundSize = `${52 * scale}px ${16 * scale}px`;
+      let i = 0;
+      setInterval(() => {
+        el.style.backgroundPosition = `${-(i * 18) * scale}px 0px`;
+        i = (i + 1) % 3;
+      }, 140);
+    })();
+  </script>
+</body>
+</html>
