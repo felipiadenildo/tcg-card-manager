@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Theme review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/theme/boxes.css">
+<style>
+  :root {
+    --bg: #e7e2d1; --surface: #fffdf6; --surface-2: #efe8d6;
+    --ink: #241f2e; --ink-soft: #5c5468; --border: #c9bfa4;
+    --accent: #6a4c9c; --accent-soft: #e7ddfa;
+    --tcg1: #2f7d54; --tcg1-soft: #dcf0e3;
+    --tcg2: #b8791a; --tcg2-soft: #f4e3c2;
+    --none: #af3626; --none-soft: #f7ddd8;
+    --unknown: #5c5468; --unknown-soft: #e2ddea;
+    --font-display: 'Press Start 2P', monospace;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--ink); margin: 0; padding-bottom: 60px; }
+  h1 { font-family: var(--font-display); font-size: 1rem; margin: 0; }
+  h2 { font-family: var(--font-display); font-size: 0.85rem; margin: 0 0 6px; }
+  h3 { font-family: var(--font-display); font-size: 0.7rem; margin: 0 0 12px; }
+  p { line-height: 1.5; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+  header.top {
+    background: var(--surface); border-bottom: 3px solid var(--border); padding: 16px 0;
+  }
+  header.top p { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.85rem; max-width: 70ch; }
+
+  nav.jump {
+    position: sticky; top: 0; z-index: 10; background: var(--ink); color: #fff;
+    display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 20px; font-size: 0.78rem;
+  }
+  nav.jump a { color: #fff; text-decoration: none; padding: 6px 10px; border-radius: 6px; }
+  nav.jump a:hover { background: rgba(255,255,255,0.15); }
+
+  .controls {
+    background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; margin: 20px 0; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    font-size: 0.82rem;
+  }
+  .controls label { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .controls output { font-family: var(--font-mono); color: var(--ink-soft); min-width: 3.5em; }
+
+  section { margin: 40px 0; scroll-margin-top: 56px; }
+  section > p.lede { color: var(--ink-soft); font-size: 0.85rem; max-width: 70ch; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .card .frame {
+    background: repeating-conic-gradient(var(--surface-2) 0% 25%, var(--surface) 0% 50%) 50% / 12px 12px;
+    border-radius: 4px; height: 100px; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .card img.pixel-img { image-rendering: pixelated; max-width: 92%; max-height: 92%; }
+  .card .name { font-family: var(--font-mono); font-size: 0.68rem; word-break: break-word; }
+  .card .dims { font-size: 0.68rem; color: var(--ink-soft); }
+  .badge {
+    align-self: flex-start; font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.4px; padding: 2px 8px; border-radius: 999px;
+  }
+  .badge.tcg1 { background: var(--tcg1-soft); color: var(--tcg1); }
+  .badge.tcg2 { background: var(--tcg2-soft); color: var(--tcg2); }
+  .badge.none { background: var(--none-soft); color: var(--none); }
+  .badge.unknown { background: var(--unknown-soft); color: var(--unknown); }
+
+  .edit-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 0.68rem; }
+  .edit-row input[type="color"] { width: 22px; height: 22px; padding: 0; border: 1px solid var(--border); border-radius: 4px; }
+
+  .box-demo { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-top: 16px; }
+  .box-demo .sample { width: 240px; }
+  .box-demo .sample.wide { width: 400px; }
+
+  .anim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-top: 16px; }
+  .anim-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 0.75rem; }
+  .sprite { image-rendering: pixelated; background-repeat: no-repeat; margin: 0 auto 8px; }
+  .anim-note { color: var(--ink-soft); font-size: 0.7rem; margin-top: 6px; line-height: 1.4; }
+
+  .draw-sequence { position: relative; width: 108px; height: 102px; margin: 0 auto 8px; }
+  .draw-sequence img { position: absolute; inset: 0; margin: auto; image-rendering: pixelated; width: 96px; }
+  .draw-sequence img.step-deck { animation: drawDeck 3s infinite; }
+  .draw-sequence img.step-fan { animation: drawFan 3s infinite; opacity: 0; }
+  @keyframes drawDeck { 0%, 40% { opacity: 1; } 55%, 100% { opacity: 0; } }
+  @keyframes drawFan { 0%, 40% { opacity: 0; } 55%, 100% { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>TCG-GBC theme review</h1>
+    <p>Everything built so far for the <code>theme/gbc-style</code> branch, in one place: box components, every mined asset (tagged by source game where known), and every animation actually playing. Nothing here touches <code>login.html</code>/<code>dashboard.php</code> yet.</p>
+  </div>
+</header>
+
+<nav class="jump">
+  <a href="#boxes">Box components</a>
+  <a href="#tcg1">Assets — TCG1 (confirmed)</a>
+  <a href="#tcg1-likely">Assets — TCG1 (likely)</a>
+  <a href="#tcg2">Assets — TCG2</a>
+  <a href="#unknown">Assets — source unclear</a>
+  <a href="#produced">Produced by us</a>
+  <a href="#animations">Animations</a>
+</nav>
+
+<div class="wrap">
+  <div class="controls">
+    <label>Pixel size
+      <input type="range" id="globalScale" min="2" max="8" step="1" value="6">
+      <output id="globalScaleOut">6&times;</output>
+    </label>
+    <span style="color:var(--ink-soft);">One native GBC pixel = this many screen pixels. Applies to every image and animation on the page.</span>
+  </div>
+
+  <!-- ============ BOX COMPONENTS ============ -->
+  <section id="boxes">
+    <h2>Box components</h2>
+    <p class="lede">Corner + edge tiles composited as CSS background layers, cut from <code>fonts/symbols.png</code> (main box) and <code>duel/box_messages.png</code> (message box), both pret/poketcg. Colors and text spacing editable live.</p>
+
+    <div class="controls">
+      <label>Outline <input type="color" id="boxOutline" value="#4a1414"></label>
+      <label>Light <input type="color" id="boxLight" value="#c24545"></label>
+      <label>Dark <input type="color" id="boxDark" value="#8a2828"></label>
+      <label>Cream <input type="color" id="boxCream" value="#e6e6c5"></label>
+      <label>Text gap
+        <input type="range" id="boxGap" min="0" max="8" step="1" value="4">
+        <output id="boxGapOut">4&times;</output>
+      </label>
+      <button id="boxReset" type="button">Reset colors</button>
+    </div>
+
+    <div class="box-demo">
+      <div class="gbc-box sample">
+        <h3>Main box</h3>
+        <p>Status HUD, login, card form. Outline / color / cream highlight / color / outline.</p>
+      </div>
+      <div class="gbc-box sample wide">
+        <h3>Main box (wide)</h3>
+        <p>Same tiles, wider container — corners should stay crisp, no stretching.</p>
+      </div>
+      <div class="gbc-box-message sample">
+        <h3>Message box</h3>
+        <p>box_messages.png: simple popups only. No cream gap, just a groove line.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ASSET SECTIONS (populated by JS from a data list) ============ -->
+  <section id="tcg1">
+    <h2>Assets — TCG1 <span class="badge tcg1" style="position:static;">poketcg</span></h2>
+    <p class="lede">Traced this session to a specific file in <code>pret/poketcg</code> — confirmed, not guessed.</p>
+    <div class="grid" id="grid-tcg1"></div>
+  </section>
+
+  <section id="tcg1-likely">
+    <h2>Assets — TCG1, likely</h2>
+    <p class="lede">Same world/context as confirmed TCG1 assets (the world map family), but I didn't personally trace the exact source file for these — Felipi cut these earlier. Flagged as "likely", not "confirmed", on purpose.</p>
+    <div class="grid" id="grid-tcg1-likely"></div>
+  </section>
+
+  <section id="tcg2">
+    <h2>Assets — TCG2 <span class="badge tcg2" style="position:static;">poketcg2</span></h2>
+    <p class="lede">Traced to <code>pret/poketcg2</code>.</p>
+    <div class="grid" id="grid-tcg2"></div>
+  </section>
+
+  <section id="unknown">
+    <h2>Assets — source unclear</h2>
+    <p class="lede">Cut before I started tracking provenance per file. Genuinely don't know if these came from TCG1 or TCG2 — labeled honestly rather than guessed.</p>
+    <div class="grid" id="grid-unknown"></div>
+  </section>
+
+  <section id="produced">
+    <h2>Produced by us (no game source)</h2>
+    <p class="lede">Not extracted from either game. Made from scratch because no clean equivalent existed in the source material.</p>
+    <div class="grid" id="grid-produced"></div>
+  </section>
+
+  <!-- ============ ANIMATIONS ============ -->
+  <section id="animations">
+    <h2>Animations</h2>
+    <p class="lede">Real sprite-sheet playback (JS stepping <code>background-position</code>), not static frames.</p>
+    <div class="anim-grid">
+      <div class="anim-card">
+        <div class="sprite" id="anim-ocean"></div>
+        <div class="name">world_map_water_deep_ocean_anim_6x.png</div>
+        <div class="anim-note">6 frames</div>
+      </div>
+      <div class="anim-card">
+        <div class="sprite" id="anim-coast1"></div>
+        <div class="name">world_map_water_coast_anim_1_9x.png</div>
+        <div class="anim-note">3&times;3 grid, 9 frames, ~9px cells measured by eye</div>
+      </div>
+      <div class="anim-card">
+        <div class="sprite" id="anim-coast2"></div>
+        <div class="name">world_map_water_coast_anim_2_9x.png</div>
+        <div class="anim-note">3&times;3 grid, 9 frames</div>
+      </div>
+      <div class="anim-card">
+        <div class="sprite" id="anim-arrow"></div>
+        <div class="name">world_map_building_cursor_arrow_2x.png</div>
+        <div class="anim-note">2 frames, bounce</div>
+      </div>
+      <div class="anim-card">
+        <div class="sprite" id="anim-shuffle"></div>
+        <div class="name">card_shuffle_anim_sheet.png</div>
+        <div class="anim-note">3 frames &mdash; candidate for the loading state</div>
+      </div>
+      <div class="anim-card">
+        <div class="sprite" id="anim-sparkle"></div>
+        <div class="name">action_sparkle_4frames.png</div>
+        <div class="anim-note">4 frames &mdash; candidate for save success</div>
+      </div>
+      <div class="anim-card">
+        <div class="draw-sequence">
+          <img class="step-deck" src="assets/gbc-review/deck_pile_stack_3.png">
+          <img class="step-fan" src="assets/gbc-review/card_hand_fan_3.png">
+        </div>
+        <div class="name">draw card (concept)</div>
+        <div class="anim-note">Cross-fade between two unrelated static icons, not real frames. Shows the idea (stacked deck &rarr; spread hand), the in-between motion still needs designing.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const ASSET_BASE = 'assets/gbc-review/';
+
+  // [file, native width, native height, note]
+  const CATALOG = {
+    'tcg1': [
+      ['dashboard_floor_tile.png', 8, 8, 'Dashboard background tile, repeats seamlessly'],
+      ['dashboard_wall_trim.png', 8, 4, 'editable', 'Horizontal trim, repeat-x'],
+      ['action_sparkle_4frames.png', 16, 16, 'editable', '2x2 grid, 4 frames'],
+      ['action_error_burst.png', 24, 24, 'editable', 'Single frame'],
+      ['textbox_frame_simple.png', 82, 34, 'Same style as the main box above, reference only'],
+      ['textbox_dialog_sample_text.png', 96, 48, 'Text positioning reference'],
+      ['textbox_trainer_badge.png', 66, 18, "Card header badge, doesn't map to our 3 games"],
+      ['portrait_box_character_profile.png', 160, 64, 'Full Status Screen reference'],
+    ],
+    'tcg1-likely': [
+      ['world_map_full.png', 162, 146, 'Assembled + colored world map'],
+      ['world_map_title_textbox.png', 106, 26, '"POKÉMON DOME" label box'],
+      ['world_map_water_deep_ocean_anim_6x.png', 103, 18, '6 animation frames'],
+      ['world_map_water_coast_anim_1_9x.png', 28, 30, '3x3 grid, 9 frames'],
+      ['world_map_water_coast_anim_2_9x.png', 28, 30, '3x3 grid, 9 frames'],
+      ['world_map_building_cursor_arrow_2x.png', 35, 18, '2 frames, bounce'],
+    ],
+    'tcg2': [
+      ['icon_cancel_x.png', 8, 16, 'Cut from coin_toss_result.png'],
+    ],
+    'unknown': [
+      ['card_back_small.png', 12, 14, ''],
+      ['card_hand_fan_3.png', 18, 16, ''],
+      ['card_shuffle_anim_sheet.png', 52, 16, '3 frames'],
+      ['deck_pile_stack_3.png', 16, 17, ''],
+      ['discard_pile_cards.png', 18, 18, ''],
+      ['cursor_arrows_right_up_down.png', 10, 30, '3 generic cursor icons'],
+    ],
+    'produced': [
+      ['icon_approve_check.png', 8, 16, 'Hand-drawn — the "O" in coin_toss_result.png was a coin-spin frame, not a circle, so it did not work as an approve icon'],
+    ],
+  };
+
+  const BADGE = { 'tcg1': 'tcg1', 'tcg1-likely': 'tcg1', 'tcg2': 'tcg2', 'unknown': 'unknown', 'produced': 'none' };
+  const BADGE_LABEL = { 'tcg1': 'TCG1', 'tcg1-likely': 'TCG1 (likely)', 'tcg2': 'TCG2', 'unknown': 'unclear', 'produced': 'produced' };
+
+  let SCALE = 6;
+
+  function renderGrid(key) {
+    const grid = document.getElementById('grid-' + key);
+    CATALOG[key].forEach((entry) => {
+      const [file, w, h, ...rest] = entry;
+      const editable = rest[0] === 'editable';
+      const note = editable ? (rest[1] || '') : (rest[0] || '');
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <span class="badge ${BADGE[key]}">${BADGE_LABEL[key]}</span>
+        <div class="frame"><img class="pixel-img" data-w="${w}" data-h="${h}" src="${ASSET_BASE}${file}"></div>
+        <div class="name">${file}</div>
+        <div class="dims">${w}&times;${h}${note ? ' &mdash; ' + note : ''}</div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+  Object.keys(CATALOG).forEach(renderGrid);
+
+  function applyScaleToImages() {
+    document.querySelectorAll('.pixel-img').forEach((img) => {
+      const w = parseInt(img.dataset.w, 10);
+      const h = parseInt(img.dataset.h, 10);
+      img.style.width = (w * SCALE) + 'px';
+      img.style.height = (h * SCALE) + 'px';
+    });
+  }
+
+  document.getElementById('globalScale').addEventListener('input', (e) => {
+    SCALE = parseInt(e.target.value, 10);
+    document.getElementById('globalScaleOut').textContent = SCALE + '×';
+    applyScaleToImages();
+    updateAnimSizing();
+  });
+  applyScaleToImages();
+
+  // ---- Box components (color + gap editing) ----
+  function applyBoxTheme() {
+    document.documentElement.style.setProperty('--gbc-box-outline', document.getElementById('boxOutline').value);
+    document.documentElement.style.setProperty('--gbc-box-light', document.getElementById('boxLight').value);
+    document.documentElement.style.setProperty('--gbc-box-dark', document.getElementById('boxDark').value);
+    document.documentElement.style.setProperty('--gbc-cream', document.getElementById('boxCream').value);
+    const gap = document.getElementById('boxGap').value;
+    document.documentElement.style.setProperty('--gbc-box-text-gap', `calc(var(--gbc-px) * ${gap})`);
+    document.getElementById('boxGapOut').textContent = gap + '×';
+  }
+  ['boxOutline', 'boxLight', 'boxDark', 'boxCream', 'boxGap'].forEach((id) => {
+    document.getElementById(id).addEventListener('input', applyBoxTheme);
+  });
+  document.getElementById('boxReset').addEventListener('click', () => {
+    document.getElementById('boxOutline').value = '#4a1414';
+    document.getElementById('boxLight').value = '#c24545';
+    document.getElementById('boxDark').value = '#8a2828';
+    document.getElementById('boxCream').value = '#e6e6c5';
+    document.getElementById('boxGap').value = 4;
+    applyBoxTheme();
+  });
+  applyBoxTheme();
+
+  function syncBoxScale() {
+    document.documentElement.style.setProperty('--gbc-px', SCALE + 'px');
+  }
+  document.getElementById('globalScale').addEventListener('input', syncBoxScale);
+  syncBoxScale();
+
+  // ---- Live recolor for the 3 "editable" mined assets ----
+  function loadImage(src) {
+    return new Promise((resolve) => { const img = new Image(); img.onload = () => resolve(img); img.src = src; });
+  }
+  function recolor(img, map) {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < data.data.length; i += 4) {
+      const key = `${data.data[i]},${data.data[i + 1]},${data.data[i + 2]}`;
+      const hex = map[key];
+      if (hex === null) { data.data[i + 3] = 0; continue; }
+      if (hex) {
+        data.data[i] = parseInt(hex.slice(1, 3), 16);
+        data.data[i + 1] = parseInt(hex.slice(3, 5), 16);
+        data.data[i + 2] = parseInt(hex.slice(5, 7), 16);
+      }
+    }
+    ctx.putImageData(data, 0, 0);
+    return canvas;
+  }
+
+  function buildEditableCard(gridKey, filename, rawSrc, colorInputs, mapFn) {
+    const grid = document.getElementById('grid-' + gridKey);
+    const card = [...grid.children].find((c) => c.querySelector('.name').textContent === filename);
+    if (!card) return;
+    const row = document.createElement('div');
+    row.className = 'edit-row';
+    row.innerHTML = colorInputs.map((c) => `<label>${c.label} <input type="color" value="${c.value}" data-role="${c.role}"></label>`).join('');
+    card.appendChild(row);
+    const img = card.querySelector('img');
+
+    async function update() {
+      const raw = await loadImage(rawSrc);
+      const values = {};
+      row.querySelectorAll('input').forEach((inp) => { values[inp.dataset.role] = inp.value; });
+      const canvas = recolor(raw, mapFn(values));
+      img.src = canvas.toDataURL();
+    }
+    row.querySelectorAll('input').forEach((inp) => inp.addEventListener('input', update));
+    update();
+  }
+
+  buildEditableCard('tcg1', 'dashboard_wall_trim.png', ASSET_BASE.replace('gbc-review/', 'gbc-review/raw/') + 'dashboard_wall_trim_raw.png',
+    [{ label: 'A', role: 'a', value: '#4a3520' }, { label: 'B', role: 'b', value: '#6b4c2c' }, { label: 'C', role: 'c', value: '#8a6b42' }],
+    (v) => ({ '0,0,0': v.a, '85,85,85': v.b, '170,170,170': v.c }));
+
+  buildEditableCard('tcg1', 'action_sparkle_4frames.png', ASSET_BASE.replace('gbc-review/', 'gbc-review/raw/') + 'action_sparkle_raw.png',
+    [{ label: 'Main', role: 'a', value: '#ffd700' }, { label: 'Light', role: 'b', value: '#fff0a0' }],
+    (v) => ({ '0,0,0': v.a, '85,85,85': v.a, '170,170,170': v.b, '255,255,255': null }));
+
+  buildEditableCard('tcg1', 'action_error_burst.png', ASSET_BASE.replace('gbc-review/', 'gbc-review/raw/') + 'action_error_burst_raw.png',
+    [{ label: 'Dark', role: 'a', value: '#b23a3a' }, { label: 'Mid', role: 'b', value: '#e8845a' }, { label: 'Deep', role: 'c', value: '#8a2020' }],
+    (v) => ({ '0,0,0': v.a, '170,170,170': v.b, '85,85,85': v.c, '255,255,255': null }));
+
+  // ---- Animations ----
+  function setSpriteBox(id, w, h) {
+    const el = document.getElementById(id);
+    el.style.width = w * SCALE + 'px';
+    el.style.height = h * SCALE + 'px';
+    return el;
+  }
+
+  const timers = [];
+  function updateAnimSizing() {
+    timers.forEach((t) => clearInterval(t));
+    timers.length = 0;
+    startAnimations();
+  }
+
+  function startAnimations() {
+    // Deep ocean: 6 frames, 16x16, pitch 17 (1px divider).
+    (function () {
+      const el = setSpriteBox('anim-ocean', 16, 16);
+      el.style.backgroundImage = `url('${ASSET_BASE}world_map_water_deep_ocean_anim_6x.png')`;
+      el.style.backgroundSize = `${103 * SCALE}px ${18 * SCALE}px`;
+      let i = 0;
+      timers.push(setInterval(() => {
+        el.style.backgroundPosition = `${-(1 + i * 17) * SCALE}px ${-1 * SCALE}px`;
+        i = (i + 1) % 6;
+      }, 160));
+    })();
+
+    // Coast, 3x3 grid.
+    ['anim-coast1', 'anim-coast2'].forEach((id, idx) => {
+      const file = idx === 0 ? 'world_map_water_coast_anim_1_9x.png' : 'world_map_water_coast_anim_2_9x.png';
+      const el = setSpriteBox(id, 8, 8);
+      el.style.backgroundImage = `url('${ASSET_BASE}${file}')`;
+      el.style.backgroundSize = `${28 * SCALE}px ${30 * SCALE}px`;
+      const xs = [1, 10, 19];
+      const ys = [1, 10, 20];
+      let i = 0;
+      timers.push(setInterval(() => {
+        el.style.backgroundPosition = `${-xs[i % 3] * SCALE}px ${-ys[Math.floor(i / 3) % 3] * SCALE}px`;
+        i = (i + 1) % 9;
+      }, 180));
+    });
+
+    // Arrow marker: 2 frames.
+    (function () {
+      const el = setSpriteBox('anim-arrow', 17, 18);
+      el.style.backgroundImage = `url('${ASSET_BASE}world_map_building_cursor_arrow_2x.png')`;
+      el.style.backgroundSize = `${35 * SCALE}px ${18 * SCALE}px`;
+      let i = 0;
+      timers.push(setInterval(() => {
+        el.style.backgroundPosition = `${-(1 + i * 17) * SCALE}px 0px`;
+        i = (i + 1) % 2;
+      }, 350));
+    })();
+
+    // Card shuffle: 3 frames, pitch ~18.
+    (function () {
+      const el = setSpriteBox('anim-shuffle', 16, 16);
+      el.style.backgroundImage = `url('${ASSET_BASE}card_shuffle_anim_sheet.png')`;
+      el.style.backgroundSize = `${52 * SCALE}px ${16 * SCALE}px`;
+      let i = 0;
+      timers.push(setInterval(() => {
+        el.style.backgroundPosition = `${-(i * 18) * SCALE}px 0px`;
+        i = (i + 1) % 3;
+      }, 140));
+    })();
+
+    // Sparkle: 4 frames, 2x2 grid, 8x8 each.
+    (function () {
+      const el = setSpriteBox('anim-sparkle', 8, 8);
+      el.style.backgroundImage = `url('${ASSET_BASE}action_sparkle_4frames.png')`;
+      el.style.backgroundSize = `${16 * SCALE}px ${16 * SCALE}px`;
+      const positions = [[0, 0], [8, 0], [0, 8], [8, 8]];
+      let i = 0;
+      timers.push(setInterval(() => {
+        const [x, y] = positions[i];
+        el.style.backgroundPosition = `${-x * SCALE}px ${-y * SCALE}px`;
+        i = (i + 1) % 4;
+      }, 130));
+    })();
+  }
+  startAnimations();
+</script>
+</body>
+</html>

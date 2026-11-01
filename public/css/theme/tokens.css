@@ -1,0 +1,50 @@
+/* Color values extracted directly from the game's source (pret/poketcg,
+   src/data/palettes1.asm and palettes2.asm), converted from the native
+   5-bit-per-channel GBC format to standard hex. Not eyeballed from
+   screenshots, except where noted below. */
+
+:root {
+  /* OverworldMapPal, used on the login/world map screen */
+  --gbc-map-bg: #ffffff;
+  --gbc-map-land: #42d600;
+  --gbc-map-land-shadow: #087b00;
+  --gbc-map-water: #4a19ff;
+  --gbc-map-outline: #080029;
+  --gbc-map-hill-light: #ce9431;
+  --gbc-map-hill-dark: #7b3100;
+  --gbc-map-marker: #ff0000;
+
+  /* MedalsPal, used on the status HUD and (reused here) the box component */
+  --gbc-cream: #e6e6c5;
+  --gbc-red: #ff5a52;
+  --gbc-blue: #31a5e6;
+  --gbc-orange: #ffad00;
+  --gbc-olive: #7b7b00;
+  --gbc-purple: #ef5af7;
+
+  /* Box border bevel: the one window frame the game uses everywhere
+     (DrawRegularTextBox, referenced by the status screen, deck menus,
+     naming screen, dialogs, all of it), sampled from fonts/symbols.png
+     (pret/poketcg). Recolored to a red scheme, since this file itself is
+     grayscale and its specific in-game palette wasn't isolated in the
+     .asm data. The 4 source tones map in this order (outer to inner):
+     black -> light -> cream (highlight) -> dark -> black -> cream (fill). */
+  --gbc-box-outline: #4a1414;
+  --gbc-box-light: #c24545;
+  --gbc-box-dark: #8a2828;
+
+  /* One native GBC pixel = 4 CSS pixels. Keep every pixel-art element on
+     this same multiplier so they all read as one consistent grid instead
+     of a mix of mismatched pixel sizes. */
+  --gbc-px: 4px;
+
+  /* Content padding for .gbc-box, split in two so each part is tunable on
+     its own: the border art itself is 5 native pixels thick (don't change
+     this unless the source tiles change), plus extra breathing room
+     between the border and the text, which is the one meant to be
+     adjusted freely. */
+  --gbc-box-border-width: calc(var(--gbc-px) * 5);
+  --gbc-box-text-gap: calc(var(--gbc-px) * 4);
+
+  --gbc-font-display: 'Press Start 2P', monospace;
+}

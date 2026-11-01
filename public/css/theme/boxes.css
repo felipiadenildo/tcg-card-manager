@@ -1,0 +1,81 @@
+@import url('tokens.css');
+
+/* The one window frame the game reuses everywhere (see DrawRegularTextBox
+   in pret/poketcg, called by the status screen, deck menus, dialogs,
+   naming screen). Corner and edge tiles cut straight from
+   fonts/symbols.png, not approximated: outline, color, a bright cream
+   gap in the middle of the band, color again, outline, then the fill.
+   Works at any size because it's 8 background layers on one element, no
+   extra markup, no border-image (inconsistent image-rendering support
+   for pixel art across browsers). */
+
+.gbc-box {
+  position: relative;
+  background-color: var(--gbc-cream);
+  padding: calc(var(--gbc-box-border-width) + var(--gbc-box-text-gap));
+  image-rendering: pixelated;
+
+  background-repeat:
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat-x, repeat-x,
+    repeat-y, repeat-y;
+
+  background-position:
+    left top, right top, left bottom, right bottom,
+    left top, left bottom,
+    left top, right top;
+
+  background-size: calc(var(--gbc-px) * 8) calc(var(--gbc-px) * 8);
+
+  background-image:
+    url('../../assets/gbc/boxes/gbc-box-corner-tl.png'),
+    url('../../assets/gbc/boxes/gbc-box-corner-tr.png'),
+    url('../../assets/gbc/boxes/gbc-box-corner-bl.png'),
+    url('../../assets/gbc/boxes/gbc-box-corner-br.png'),
+    url('../../assets/gbc/boxes/gbc-box-edge-top.png'),
+    url('../../assets/gbc/boxes/gbc-box-edge-bottom.png'),
+    url('../../assets/gbc/boxes/gbc-box-edge-left.png'),
+    url('../../assets/gbc/boxes/gbc-box-edge-right.png');
+}
+
+/* Simpler box, from box_messages.png: only for small message popups, not
+   the universal window frame above. No cream highlight gap in the band,
+   just outline, color, groove line, color, outline, then the fill. The
+   edge-left/right tiles are narrower (6px native) since the border on
+   this one is thinner than the main box. */
+.gbc-box-message {
+  position: relative;
+  background-color: var(--gbc-cream);
+  padding: calc(var(--gbc-box-border-width) + var(--gbc-box-text-gap));
+  image-rendering: pixelated;
+
+  background-repeat:
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat-x, repeat-x,
+    repeat-y, repeat-y;
+
+  background-position:
+    left top, right top, left bottom, right bottom,
+    left top, left bottom,
+    left top, right top;
+
+  background-size:
+    calc(var(--gbc-px) * 8) calc(var(--gbc-px) * 8),
+    calc(var(--gbc-px) * 8) calc(var(--gbc-px) * 8),
+    calc(var(--gbc-px) * 8) calc(var(--gbc-px) * 8),
+    calc(var(--gbc-px) * 8) calc(var(--gbc-px) * 8),
+    calc(var(--gbc-px) * 8) calc(var(--gbc-px) * 8),
+    calc(var(--gbc-px) * 8) calc(var(--gbc-px) * 8),
+    calc(var(--gbc-px) * 6) calc(var(--gbc-px) * 8),
+    calc(var(--gbc-px) * 6) calc(var(--gbc-px) * 8);
+
+  background-image:
+    url('../../assets/gbc/boxes-message/gbc-msgbox-corner-tl.png'),
+    url('../../assets/gbc/boxes-message/gbc-msgbox-corner-tr.png'),
+    url('../../assets/gbc/boxes-message/gbc-msgbox-corner-bl.png'),
+    url('../../assets/gbc/boxes-message/gbc-msgbox-corner-br.png'),
+    url('../../assets/gbc/boxes-message/gbc-msgbox-edge-top.png'),
+    url('../../assets/gbc/boxes-message/gbc-msgbox-edge-bottom.png'),
+    url('../../assets/gbc/boxes-message/gbc-msgbox-edge-left.png'),
+    url('../../assets/gbc/boxes-message/gbc-msgbox-edge-right.png');
+}
