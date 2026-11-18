@@ -118,3 +118,7 @@ decision above.
   name.** An empty-looking cell can read as a loading glitch or a bug, and repeating the English name
   would misrepresent data that was never actually entered. A plain placeholder character makes it
   immediately clear, at a glance, that the field simply was not filled in for that card.
+
+## License
+
+[MIT](LICENSE). Magic: The Gathering, Pokémon and Yu-Gi-Oh! are trademarks of their owners.
